@@ -5,7 +5,8 @@ export default component$(() => {
 
   const state = useStore({
     email: "",
-    password: ""
+    password: "",
+    isSignUp: false,
   })
 
   return (
@@ -82,21 +83,44 @@ export default component$(() => {
                 alert("email empty")
                 return
               }
-              userLoginByEmail(state.email, state.password).then((resp) => {
-                console.log(resp)
-                //TODO: handle response
-              }).catch((err) => {
-                //TODO: handle error
-                console.log(err)
-              })
+              if (state.password === "") {
+                alert("empty password")
+                return
+              }
+              if (state.isSignUp) {
+                //TODO: complete sign up
+              } else {
+                userLoginByEmail(state.email, state.password).then((resp) => {
+                  console.log(resp)
+                  //TODO: handle response
+                }).catch((err) => {
+                  //TODO: handle error
+                  console.log(err)
+                })
+              }
+
             }}
           >
-            Sign in
+            {state.isSignUp ? "Sign up" : "Sign in"}
           </button>
 
           <p className="text-center text-sm text-gray-500">
-            No account?
-            <a className="underline" href="">Sign up</a>
+            {state.isSignUp ? (
+              <>
+                Already have an account?
+                <button className="underline" onClick$={() => {
+                  state.isSignUp = false
+                }}>Sign in</button>
+              </>
+            ) : (
+              <>
+                No account?
+                <button className="underline" onClick$={() => {
+                  state.isSignUp = true
+                }}>Sign up</button>
+              </>
+            )}
+
           </p>
         </div>
       </div>
