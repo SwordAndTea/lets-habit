@@ -1,5 +1,5 @@
-import {component$, Resource} from '@builder.io/qwik';
-import {RequestHandler, useEndpoint} from "@builder.io/qwik-city";
+import {component$} from '@builder.io/qwik';
+import {RequestHandler} from "@builder.io/qwik-city";
 
 
 export const onGet: RequestHandler<null> = async ({response}) => {

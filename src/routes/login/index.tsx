@@ -10,9 +10,9 @@ export default component$(() => {
   })
 
   return (
-    <div class="mx-auto max-w-screen-xl px-4 py-16 sm:px-6 lg:px-8">
-      <div class="mx-auto max-w-lg">
-        <h1 class="text-center text-2xl font-bold text-indigo-600 sm:text-3xl">
+    <div class="w-full flex" style={{height: "90vh"}}>
+      <div class="m-auto p-16 sm:p-8 w-full max-w-lg rounded-lg shadow-2xl">
+        <h1 class="text-center text-2xl font-bold text-blue-400 sm:text-3xl">
           Lets Habit
         </h1>
 
@@ -20,10 +20,8 @@ export default component$(() => {
           become better may not be a lonely road
         </p>
 
-        <div class="mt-6 mb-0 space-y-4 rounded-lg p-8 shadow-2xl">
+        <div class="mt-6 mb-0 space-y-4">
           <form class="space-y-4">
-            {/*the text*/}
-            <p className="text-lg font-medium">Sign in to your account</p>
 
             {/* the email input */}
             <div>
@@ -77,7 +75,7 @@ export default component$(() => {
           </form>
           <button
             type="submit"
-            className="block w-full rounded-lg bg-indigo-600 px-5 py-3 text-sm font-medium text-white"
+            className="block w-full rounded-lg bg-blue-500 px-5 py-3 text-sm font-medium text-white"
             onClick$={() => {
               if (state.email === "") {
                 alert("email empty")
@@ -91,14 +89,16 @@ export default component$(() => {
                 //TODO: complete sign up
               } else {
                 userLoginByEmail(state.email, state.password).then((resp) => {
-                  console.log(resp)
+                  console.log("success", resp)
                   //TODO: handle response
                 }).catch((err) => {
-                  //TODO: handle error
-                  console.log(err)
+                  if (err.response != null && err.response.data != null && err.response.data.meta != null) {
+                    alert(`${err.response.status} ${err.response.data.meta.message}`)
+                  } else {
+                    alert(`${err.message}`)
+                  }
                 })
               }
-
             }}
           >
             {state.isSignUp ? "Sign up" : "Sign in"}
