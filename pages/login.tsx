@@ -1,27 +1,54 @@
-import {component$, useStore} from "@builder.io/qwik";
-import {userLoginByEmail} from "~/api/user";
+import {userLoginByEmail} from "../api/user";
+import {useState} from "react";
+import {useNotifications} from "reapop";
+import {useDispatch} from "react-redux";
+import {notify} from 'reapop'
 
-export default component$(() => {
+export default function Login() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isSignUp, setIsSignUp] = useState(false);
 
-  const state = useStore({
-    email: "",
-    password: "",
-    isSignUp: false,
-  })
+  const dispatch = useDispatch()
+
+  const handleDefaultSignUpLogin = () =>{
+    if (email === "") {
+      dispatch(notify("empty email","error"))
+      return
+    }
+    if (password === "") {
+      dispatch(notify("empty password","error"))
+      return
+    }
+    if (isSignUp) {
+      //TODO: complete sign up
+    } else {
+      userLoginByEmail(email, password).then((resp) => {
+        console.log("success", resp)
+        //TODO: handle response
+      }).catch((err) => {
+        if (err.response != null && err.response.data != null && err.response.data.meta != null) {
+          dispatch(notify(`${err.response.status} ${err.response.data.meta.message}`, "error"))
+        } else {
+          dispatch(notify(`${err.message}`, "error"))
+        }
+      })
+    }
+  }
 
   return (
-    <div class="w-full flex" style={{height: "90vh"}}>
-      <div class="m-auto p-16 sm:p-8 w-full max-w-lg rounded-lg shadow-2xl">
-        <h1 class="text-center text-2xl font-bold text-blue-400 sm:text-3xl">
+    <div className="w-full flex" style={{height: "90vh"}}>
+      <div className="m-auto p-16 sm:p-8 w-full max-w-lg rounded-lg shadow-2xl">
+        <h1 className="text-center text-2xl font-bold text-blue-400 sm:text-3xl">
           Lets Habit
         </h1>
 
-        <p class="mx-auto mt-4 max-w-md text-center text-gray-500">
+        <p className="mx-auto mt-4 max-w-md text-center text-gray-500">
           become better may not be a lonely road
         </p>
 
-        <div class="mt-6 mb-0 space-y-4">
-          <form class="space-y-4">
+        <div className="mt-6 mb-0 space-y-4">
+          <form className="space-y-4">
 
             {/* the email input */}
             <div>
@@ -33,9 +60,8 @@ export default component$(() => {
                     type="email"
                     placeholder="Email"
                     className="peer h-10 w-full border-none bg-transparent p-0 placeholder-transparent focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
-                    onInput$={(e: Event) => {
-                      // @ts-ignore
-                      state.email = e.target.value
+                    onChange={(e) => {
+                      setEmail(e.target.value)
                     }}
                   />
 
@@ -58,9 +84,8 @@ export default component$(() => {
                     type="password"
                     placeholder="password"
                     className="peer h-10 w-full border-none bg-transparent p-0 placeholder-transparent focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
-                    onInput$={(e: Event) => {
-                      // @ts-ignore
-                      state.password = e.target.value
+                    onChange={(e) => {
+                      setPassword(e.target.value)
                     }}
                   />
 
@@ -76,47 +101,24 @@ export default component$(() => {
           <button
             type="submit"
             className="block w-full rounded-lg bg-blue-500 px-5 py-3 text-sm font-medium text-white"
-            onClick$={() => {
-              if (state.email === "") {
-                alert("email empty")
-                return
-              }
-              if (state.password === "") {
-                alert("empty password")
-                return
-              }
-              if (state.isSignUp) {
-                //TODO: complete sign up
-              } else {
-                userLoginByEmail(state.email, state.password).then((resp) => {
-                  console.log("success", resp)
-                  //TODO: handle response
-                }).catch((err) => {
-                  if (err.response != null && err.response.data != null && err.response.data.meta != null) {
-                    alert(`${err.response.status} ${err.response.data.meta.message}`)
-                  } else {
-                    alert(`${err.message}`)
-                  }
-                })
-              }
-            }}
+            onClick={handleDefaultSignUpLogin}
           >
-            {state.isSignUp ? "Sign up" : "Sign in"}
+            {isSignUp ? "Sign up" : "Sign in"}
           </button>
 
           <p className="text-center text-sm text-gray-500">
-            {state.isSignUp ? (
+            {isSignUp ? (
               <>
                 Already have an account?
-                <button className="underline" onClick$={() => {
-                  state.isSignUp = false
+                <button className="underline" onClick={() => {
+                  setIsSignUp(false)
                 }}>Sign in</button>
               </>
             ) : (
               <>
                 No account?
-                <button className="underline" onClick$={() => {
-                  state.isSignUp = true
+                <button className="underline" onClick={() => {
+                  setIsSignUp(true)
                 }}>Sign up</button>
               </>
             )}
@@ -126,4 +128,4 @@ export default component$(() => {
       </div>
     </div>
   )
-})
+}

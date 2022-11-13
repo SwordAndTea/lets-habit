@@ -1,9 +1,0 @@
-{
-  "$schema": "https://json.schemastore.org/web-manifest-combined.json",
-  "name": "Lets Habit",
-  "short_name": "Welcome to Lets Habit",
-  "start_url": ".",
-  "display": "standalone",
-  "background_color": "#fff",
-  "description": "A habit track app."
-}
