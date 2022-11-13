@@ -1,6 +1,5 @@
-import {userLoginByEmail} from "../api/user";
+import {userLoginByEmail, userRegisterByEmail} from "../api/user";
 import {useState} from "react";
-import {useNotifications} from "reapop";
 import {useDispatch} from "react-redux";
 import {notify} from 'reapop'
 
@@ -8,30 +7,32 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isSignUp, setIsSignUp] = useState(false);
+  const [disableSignInSignUp, setDisableSignInSignUp] = useState(false);
 
   const dispatch = useDispatch()
 
-  const handleDefaultSignUpLogin = () =>{
+  const handleDefaultSignUpLogin = () => {
     if (email === "") {
-      dispatch(notify("empty email","error"))
+      dispatch(notify("empty email", "error"))
       return
     }
     if (password === "") {
-      dispatch(notify("empty password","error"))
+      dispatch(notify("empty password", "error"))
       return
     }
     if (isSignUp) {
-      //TODO: complete sign up
-    } else {
-      userLoginByEmail(email, password).then((resp) => {
-        console.log("success", resp)
+      setDisableSignInSignUp(true)
+      userRegisterByEmail(email, password).then((resp) => {
         //TODO: handle response
-      }).catch((err) => {
-        if (err.response != null && err.response.data != null && err.response.data.meta != null) {
-          dispatch(notify(`${err.response.status} ${err.response.data.meta.message}`, "error"))
-        } else {
-          dispatch(notify(`${err.message}`, "error"))
-        }
+      }).finally(() => {
+        setDisableSignInSignUp(false)
+      })
+    } else {
+      setDisableSignInSignUp(true)
+      userLoginByEmail(email, password).then((resp) => {
+        //TODO: handle response
+      }).finally(() => {
+        setDisableSignInSignUp(false)
       })
     }
   }
@@ -100,26 +101,49 @@ export default function Login() {
           </form>
           <button
             type="submit"
-            className="block w-full rounded-lg bg-blue-500 px-5 py-3 text-sm font-medium text-white"
+            className={`block flex justify-center w-full rounded-lg bg-blue-500 px-5 py-3 text-sm font-medium text-white`}
             onClick={handleDefaultSignUpLogin}
+            disabled={disableSignInSignUp}
           >
-            {isSignUp ? "Sign up" : "Sign in"}
+            {disableSignInSignUp ? (
+              <>
+                <svg className="animate-spin h-5 w-5 mr-3" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                  <path className="opacity-75" fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                  </path>
+                </svg>
+                {isSignUp ? "Signing up" : "Signing in"}
+              </>
+            ) : (<>{isSignUp ? "Sign up" : "Sign in"}</>)}
           </button>
 
           <p className="text-center text-sm text-gray-500">
             {isSignUp ? (
               <>
                 Already have an account?
-                <button className="underline" onClick={() => {
-                  setIsSignUp(false)
-                }}>Sign in</button>
+                <button
+                  className="underline"
+                  onClick={() => {
+                    setIsSignUp(false)
+                  }}
+                  disabled={disableSignInSignUp}
+                >
+                  Sign in
+                </button>
               </>
             ) : (
               <>
                 No account?
-                <button className="underline" onClick={() => {
-                  setIsSignUp(true)
-                }}>Sign up</button>
+                <button
+                  className="underline"
+                  onClick={() => {
+                    setIsSignUp(true)
+                  }}
+                  disabled={disableSignInSignUp}
+                >
+                  Sign up
+                </button>
               </>
             )}
 
