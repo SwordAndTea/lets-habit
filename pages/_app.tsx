@@ -1,6 +1,6 @@
 import '../styles/globals.css'
 import type {AppProps} from 'next/app'
-import {LayoutFooterOnly} from "../components/layout/layout";
+import {LayoutFooterOnly, LayoutHeaderFooter} from "../components/layout/layout";
 import store from "../app/store";
 import {Provider} from "react-redux";
 import {setUpNotifications} from 'reapop'
@@ -15,11 +15,12 @@ setUpNotifications({
 })
 
 export default function App({Component, pageProps}: AppProps) {
+  // @ts-ignore
+  const getLayout = Component.getLayout || ((page) => <LayoutHeaderFooter>{page}</LayoutHeaderFooter>)
+
   return (
     <Provider store={store}>
-      <LayoutFooterOnly>
-        <Component {...pageProps} />
-      </LayoutFooterOnly>
+      {getLayout(<Component {...pageProps} />)}
     </Provider>
 
   )
