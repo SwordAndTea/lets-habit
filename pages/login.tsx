@@ -3,6 +3,7 @@ import {useState} from "react";
 import {useDispatch} from "react-redux";
 import {notify} from 'reapop'
 import {LayoutFooterOnly} from "../components/layout/layout";
+import {CommonMinHeight} from "./const";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -39,7 +40,7 @@ export default function Login() {
   }
 
   return (
-    <div className="w-full flex" style={{height: "90vh"}}>
+    <div className={`w-full ${CommonMinHeight} flex`}>
       <div className="m-auto p-16 sm:p-8 w-full max-w-lg rounded-lg shadow-2xl">
         <h1 className="text-center text-2xl font-bold text-blue-400 sm:text-3xl">
           Lets Habit
