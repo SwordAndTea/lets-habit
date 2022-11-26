@@ -1,4 +1,4 @@
-import {combineReducers, createStore} from 'redux'
+import {combineReducers} from 'redux'
 import {reducer as notificationsReducer} from 'reapop'
 import {configureStore} from "@reduxjs/toolkit";
 

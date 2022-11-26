@@ -1,7 +1,7 @@
 import '../styles/globals.css'
 import type {AppProps} from 'next/app'
-import {LayoutFooterOnly, LayoutHeaderFooter} from "../components/layout/layout";
-import store from "../app/store";
+import {LayoutHeaderFooter} from "../components/layout/layout";
+import store from "../util/store";
 import {Provider} from "react-redux";
 import {setUpNotifications} from 'reapop'
 
