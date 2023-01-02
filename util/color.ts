@@ -45,7 +45,7 @@ export const GenGradientColor = (baseColor: any, lightColorCount: number, totalC
   let result = []
   for (let i = 0; i < totalCount; i++) {
     let isLight = i <= 6
-    let j = isLight ? 5 + 1 - i : i - 5 - 1
+    let j = isLight ? lightColorCount - i : i - lightColorCount
     result.push(tinycolor({
       h: getHue(hsvColor, j, isLight),
       s: getSaturation(hsvColor, j, isLight),

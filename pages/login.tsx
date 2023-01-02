@@ -1,9 +1,9 @@
 import {userLoginByEmail, userRegisterByEmail} from "../api/user";
 import {useState} from "react";
-import {useDispatch} from "react-redux";
-import {notify} from 'reapop'
 import {LayoutFooterOnly} from "../components/layout/layout";
 import {CommonMinHeight} from "./const";
+import {useRouter} from "next/router";
+import {noti} from "../util/noti";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -11,28 +11,35 @@ export default function Login() {
   const [isSignUp, setIsSignUp] = useState(false);
   const [disableSignInSignUp, setDisableSignInSignUp] = useState(false);
 
-  const dispatch = useDispatch()
+  const route = useRouter()
 
   const handleDefaultSignUpLogin = () => {
     if (email === "") {
-      dispatch(notify("empty email", "error"))
+      noti.error("empty email")
       return
     }
     if (password === "") {
-      dispatch(notify("empty password", "error"))
+      noti.error("empty password")
       return
     }
     if (isSignUp) {
+      // do sign up
       setDisableSignInSignUp(true)
       userRegisterByEmail(email, password).then((resp) => {
-        //TODO: handle response
+        if (resp.data && resp.data.data && resp.data.data.uid) {
+          route.push(`/email_activate?uid=${resp.data.data.uid}`)
+        } else {
+          noti.error("can not parse response")
+        }
       }).finally(() => {
         setDisableSignInSignUp(false)
       })
     } else {
+      // do sign in
       setDisableSignInSignUp(true)
       userLoginByEmail(email, password).then((resp) => {
-        //TODO: handle response
+        console.log(resp)
+        route.push("/home")
       }).finally(() => {
         setDisableSignInSignUp(false)
       })
