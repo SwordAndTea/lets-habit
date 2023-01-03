@@ -18,7 +18,7 @@ export const LayoutHeaderFooter = ({children}) => {
   }, []);
 
   return (
-    <>
+    <div className="flex flex-col min-h-screen">
       {!isSSR && <NotificationsSystem
         // 2. Pass the notifications you want Reapop to display.
           notifications={notifications}
@@ -28,9 +28,12 @@ export const LayoutHeaderFooter = ({children}) => {
           theme={atalhoTheme}
       />}
       <Header />
-      {children}
+      <div className="flex-1">
+        {children}
+      </div>
+
       <Footer />
-    </>
+    </div>
   )
 }
 
@@ -48,7 +51,7 @@ export const LayoutFooterOnly = ({children}) => {
   }, []);
 
   return (
-    <div>
+    <div className="flex flex-col min-h-screen">
       {!isSSR && <NotificationsSystem
         // 2. Pass the notifications you want Reapop to display.
           notifications={notifications}
@@ -57,7 +60,9 @@ export const LayoutFooterOnly = ({children}) => {
         // 4. Pass a builtIn theme or a custom theme.
           theme={atalhoTheme}
       />}
-      {children}
+      <div className="flex-1 flex">{/*fixme: set display: flex here may be not a good choice*/}
+        {children}
+      </div>
       <Footer />
     </div>
   )

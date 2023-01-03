@@ -1,4 +1,3 @@
-import {CommonMinHeight} from "./const";
 import Heatmap from "../components/heatmap/heatmap";
 import {useState} from "react";
 
@@ -37,10 +36,15 @@ function HabitCard(props: HabitCardProps) {
 export default function Home() {
   const [habitType, setHabitType] = useState(HabitType.Good)
 
+  const handleCreateHabit = () => {
+
+  }
+
   return (
-    <div className={`${CommonMinHeight}`}>
+    <div>
       <div className="w-full my-4">
-        <div className="flex">
+        <div className="flex"> {/*top button container*/}
+          {/*habits to form button*/}
           <button
             className="w-40 ml-auto p-2 rounded-l-md bg-lime-400 text-amber-50"
             onClick={() => {
@@ -51,6 +55,7 @@ export default function Home() {
           >
             habits to form
           </button>
+          {/*habits to discard button*/}
           <button
             className="`w-40 mr-auto p-2 rounded-r-md bg-amber-400 text-amber-50"
             onClick={() => {
@@ -60,6 +65,13 @@ export default function Home() {
             }}
           >
             habits to discard
+          </button>
+          {/*new habit button*/}
+          <button
+            className="w-24 h-10 absolute right-8 rounded-md bg-black text-amber-50"
+            onClick={handleCreateHabit}
+          >
+            new habit
           </button>
         </div>
 

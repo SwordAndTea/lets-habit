@@ -1,6 +1,5 @@
-import {SVGProps, useEffect, useState} from "react";
+import {useEffect, useState} from "react";
 import {LayoutFooterOnly} from "../components/layout/layout";
-import {CommonMinHeight} from "./const";
 import {useRouter} from "next/router";
 import {userEmailActivateCheck, userEmailActivateResend} from "../api/user";
 import {noti} from "../util/noti";
@@ -56,7 +55,7 @@ export default function EmailActivatePage() {
 
   return (
     <>
-      <div className={`${CommonMinHeight} flex`}>
+      <div className="flex">
         <div className="m-auto max-w-3xl px-2 sm:max-w-2xl">
           <EmailIcon className="mx-auto w-32 h-32 mb-2 sm:w-20 sm:h-20"/>
           <p className="text-center">
