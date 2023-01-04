@@ -1,4 +1,5 @@
-import {DateToDateStr, GenGradientColor} from "../../util/color";
+import {GenGradientColor} from "../../util/color";
+import {DateToDateStr} from "../../util/date";
 
 interface HeatmapData {
   date: Date

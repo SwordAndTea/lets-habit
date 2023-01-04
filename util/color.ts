@@ -33,7 +33,7 @@ function getSaturation(hsvColor: HSVColor, i: number, isLight: boolean) {
 function getValue(hsvColor: HSVColor, i: number, isLight: boolean) {
   let value = 0
   if (isLight) {
-    value =  Math.round(hsvColor.v * 100) + 5 * i
+    value = Math.round(hsvColor.v * 100) + 5 * i
   } else {
     value = Math.round(hsvColor.v * 100) - 15 * i
   }
@@ -54,21 +54,4 @@ export const GenGradientColor = (baseColor: any, lightColorCount: number, totalC
   }
 
   return result
-}
-
-function pad(n:number): string {
-  if (n < 10 ) {
-    return '0' + n;
-  }
-  return n.toString(10);
-}
-
-export const DateToDateStr = (d: Date): string => {
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
-}
-
-export const IsSameDay = (l: Date, r: Date): boolean => {
-  return l.getUTCFullYear() == r.getUTCFullYear()
-    && l.getUTCMonth() == r.getUTCMonth()
-    && l.getUTCDay() == r.getUTCDay()
 }
