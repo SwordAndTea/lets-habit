@@ -3,6 +3,7 @@ import {useState} from "react";
 import {LayoutFooterOnly} from "../components/layout/layout";
 import {useRouter} from "next/router";
 import {noti} from "../util/noti";
+import {WeChatIcon} from "../components/icons/icons";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -47,17 +48,17 @@ export default function Login() {
 
   return (
     <div className="m-auto p-16 sm:p-8 w-full max-w-lg rounded-lg shadow-2xl">
+      {/*title*/}
       <h1 className="text-center text-2xl font-bold text-blue-400 sm:text-3xl">
         Lets Habit
       </h1>
-
+      {/*subtitle*/}
       <p className="mx-auto mt-4 max-w-md text-center text-gray-500">
         become better may not be a lonely road
       </p>
-
+      {/**/}
       <div className="mt-6 mb-0 space-y-4">
         <form className="space-y-4">
-
           {/* the email input */}
           <div>
             <div className="relative mt-1">
@@ -67,7 +68,7 @@ export default function Login() {
                 <input
                   type="email"
                   placeholder="Email"
-                  className="peer h-10 w-full border-none bg-transparent p-0 placeholder-transparent focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
+                  className="peer h-10 border-none bg-transparent p-0 placeholder-transparent focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
                   onChange={(e) => {
                     setEmail(e.target.value)
                   }}
@@ -91,7 +92,7 @@ export default function Login() {
                 <input
                   type="password"
                   placeholder="password"
-                  className="peer h-10 w-full border-none bg-transparent p-0 placeholder-transparent focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
+                  className="peer h-10 border-none bg-transparent p-0 placeholder-transparent focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
                   onChange={(e) => {
                     setPassword(e.target.value)
                   }}
@@ -106,6 +107,7 @@ export default function Login() {
             </div>
           </div>
         </form>
+        {/*sign in / sign up button*/}
         <button
           type="submit"
           className={`block flex justify-center w-full rounded-lg bg-blue-500 px-5 py-3 text-sm font-medium text-white`}
@@ -130,6 +132,8 @@ export default function Login() {
           ) : (<>{isSignUp ? "Sign up" : "Sign in"}</>)}
         </button>
 
+
+        {/*sign in / sign up switch info*/}
         <p className="text-center text-sm text-gray-500">
           {isSignUp ? (
             <>
@@ -158,8 +162,25 @@ export default function Login() {
               </button>
             </>
           )}
-
         </p>
+
+        <div className="pt-2">
+          {/*other login type separate line*/}
+          <div className="flex relative">
+            <div className="w-full h-[1px] m-auto bg-[rgba(0,0,0,0.3)]"/>
+            <span
+              className="px-2 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white text-sm text-[rgba(0,0,0,0.3)]"
+            >
+            or login with
+          </span>
+          </div>
+
+          <div className="flex mt-6">
+            <button className="mx-auto">
+              <WeChatIcon width="20" height="20" className="fill-slate-800"/>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   )

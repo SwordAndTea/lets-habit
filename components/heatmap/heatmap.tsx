@@ -1,5 +1,6 @@
 import {GenGradientColor} from "../../util/color";
 import {DateToDateStr} from "../../util/date";
+import React from "react";
 
 interface HeatmapData {
   date: Date

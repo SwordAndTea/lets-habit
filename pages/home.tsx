@@ -143,60 +143,60 @@ export default function Home() {
   }
 
   return (
-    <div>
-      <div className="w-full my-4">
-        <div className="flex"> {/*top button container*/}
-          {/*habits to form button*/}
-          <button
-            className={`w-40 ml-auto p-2 rounded-l-md bg-slate-600 text-amber-50 ${habitType == HabitType.Good ? "translate-y-[3px] shadow-[inset_0px_2px_black]" : "hover:bg-slate-700 shadow-[0px_3px_black]"}`}
-            onClick={() => {
-              if (habitType != HabitType.Good) {
-                setHabitType(HabitType.Good)
-              }
-            }}
-          >
-            Habits to form
-          </button>
-          {/*habits to discard button*/}
-          <button
-            className={`w-40 mr-auto p-2 rounded-r-md bg-yellow-500 text-amber-50 ${habitType == HabitType.Bad ? "translate-y-[3px] shadow-[inset_0px_2px_black]" : "hover:bg-yellow-600 shadow-[0px_3px_black]"}`}
-            onClick={() => {
-              if (habitType != HabitType.Bad) {
-                setHabitType(HabitType.Bad)
-              }
-            }}
-          >
-            Habits to discard
-          </button>
-          {/*new habit button*/}
-          <button
-            className="flex h-10 p-2 absolute right-8 rounded-md bg-slate-800 text-amber-50 shadow-[0px_3px_gray] active:translate-y-[3px] active:shadow-none"
-            onClick={toNewHabitPage}
-          >
-            New Habit
-          </button>
-        </div>
-        <selectedHabitContext.Provider value={{selectedHabitInfo, dispatch}}>
-          <ul className="w-full px-8 my-6">
-            {[1, 2, 3].map((index) => {
-              return (
-                <li className="w-full mb-8" key={index}>
-                  <HabitCard
-                    habitID={index.toString()}
-                    title="test"
-                    habitType={habitType}
-                    checkFrequency="daily"
-                    checkDelayHour={0}
-                    remainRetroactiveChance={1}
-                    onEditHabit={toEditHabitPage}
-                    onDeleteHabit={doDeleteHabit}
-                  />
-                </li>
-              )
-            })}
-          </ul>
-        </selectedHabitContext.Provider>
+    <div className="my-4">
+      <div className="flex"> {/*top button container*/}
+        {/*habits to form button*/}
+        <button
+          className={`w-40 ml-auto p-2 rounded-l-md bg-slate-600 text-amber-50 ${habitType == HabitType.Good ? "translate-y-[3px] shadow-[inset_0px_2px_black]" : "hover:bg-slate-700 shadow-[0px_3px_black]"}`}
+          onClick={() => {
+            if (habitType != HabitType.Good) {
+              setHabitType(HabitType.Good)
+            }
+          }}
+        >
+          Habits to form
+        </button>
+        {/*habits to discard button*/}
+        <button
+          className={`w-40 mr-auto p-2 rounded-r-md bg-yellow-500 text-amber-50 ${habitType == HabitType.Bad ? "translate-y-[3px] shadow-[inset_0px_2px_black]" : "hover:bg-yellow-600 shadow-[0px_3px_black]"}`}
+          onClick={() => {
+            if (habitType != HabitType.Bad) {
+              setHabitType(HabitType.Bad)
+            }
+          }}
+        >
+          Habits to discard
+        </button>
+        {/*new habit button*/}
+        <button
+          className="flex h-10 p-2 absolute right-8 rounded-md bg-slate-800 text-amber-50 shadow-[0px_3px_gray] active:translate-y-[3px] active:shadow-none"
+          onClick={toNewHabitPage}
+        >
+          New Habit
+        </button>
       </div>
+
+      {/*habit table*/}
+      <selectedHabitContext.Provider value={{selectedHabitInfo, dispatch}}>
+        <ul className="px-8 my-6">
+          {[1, 2, 3].map((index) => {
+            return (
+              <li className="mb-8" key={index}>
+                <HabitCard
+                  habitID={index.toString()}
+                  title="test"
+                  habitType={habitType}
+                  checkFrequency="daily"
+                  checkDelayHour={0}
+                  remainRetroactiveChance={1}
+                  onEditHabit={toEditHabitPage}
+                  onDeleteHabit={doDeleteHabit}
+                />
+              </li>
+            )
+          })}
+        </ul>
+      </selectedHabitContext.Provider>
     </div>
   )
 }
