@@ -4,6 +4,7 @@ import {LayoutFooterOnly} from "../components/layout/layout";
 import {useRouter} from "next/router";
 import {noti} from "../util/noti";
 import {WeChatIcon} from "../components/icons/icons";
+import {EmailActivatePollTokenParam} from "../util/const";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -26,8 +27,8 @@ export default function Login() {
       // do sign up
       setDisableSignInSignUp(true)
       userRegisterByEmail(email, password).then((resp) => {
-        if (resp.data && resp.data.data && resp.data.data.uid) {
-          route.push(`/email_activate?uid=${resp.data.data.uid}`)
+        if (resp.data && resp.data.data && resp.data.data.poll_token) {
+          route.push(`/user/email/activate/check?${EmailActivatePollTokenParam}=${resp.data.data.poll_token}`)
         } else {
           noti.error("can not parse response")
         }

@@ -1,8 +1,7 @@
-import Heatmap from "../components/heatmap/heatmap";
-import {createContext, useContext, useReducer, useState} from "react";
+import {createContext, useContext, useEffect, useReducer, useState} from "react";
 import {useRouter} from "next/router";
 import {EditIcon, DeleteIcon} from "../components/icons/icons";
-import {HabitIDURLParam} from "./const";
+import {HabitIDURLParam, UserTokenHeader} from "../util/const";
 
 enum HabitType {
   Good,
@@ -124,6 +123,12 @@ export default function Home() {
   const [habitType, setHabitType] = useState(HabitType.Good)
   const [selectedHabitInfo, dispatch] = useReducer(reducer, defaultSelectedHabit)
   const route = useRouter()
+
+  useEffect(()=> {
+    if (localStorage.getItem(UserTokenHeader) == null) { // TODO: replace with get habit list
+      route.replace("/login")
+    }
+  })
 
   const toNewHabitPage = () => {
     route.push("/habit/new")

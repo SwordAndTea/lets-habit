@@ -5,7 +5,7 @@ export default function RootPage() {
   const route = useRouter()
 
   useEffect(()=> {
-    route.replace("/login")
+    route.replace("/home")
   })
 
   return <></>
