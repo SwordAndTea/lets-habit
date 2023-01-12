@@ -1,7 +1,7 @@
 import {createContext, useContext, useEffect, useReducer, useState} from "react";
 import {useRouter} from "next/router";
 import {EditIcon, DeleteIcon} from "../components/icons/icons";
-import {HabitIDURLParam, UserTokenHeader} from "../util/const";
+import {HabitIDURLParam, RoutePath, UserTokenHeader} from "../util/const";
 
 enum HabitType {
   Good,
@@ -126,19 +126,19 @@ export default function Home() {
 
   useEffect(()=> {
     if (localStorage.getItem(UserTokenHeader) == null) { // TODO: replace with get habit list
-      route.replace("/login")
+      route.replace(RoutePath.LoginPage)
     }
   })
 
   const toNewHabitPage = () => {
-    route.push("/habit/new")
+    route.push(RoutePath.NewHabitPage)
   }
 
   const toEditHabitPage = (habitID: string) => {
     let query = {}
     // @ts-ignore
     query[HabitIDURLParam] = habitID
-    route.push("/habit/edit", {
+    route.push(RoutePath.EditHabitPage, {
       query: query
     })
   }
@@ -174,7 +174,7 @@ export default function Home() {
         </button>
         {/*new habit button*/}
         <button
-          className="flex h-10 p-2 absolute right-8 rounded-md bg-slate-800 text-amber-50 shadow-[0px_3px_gray] active:translate-y-[3px] active:shadow-none"
+          className="flex h-10 p-2 absolute right-8 rounded-md bg-pink-400 text-amber-50 shadow-[0px_3px_black] active:translate-y-[3px] active:shadow-none"
           onClick={toNewHabitPage}
         >
           New Habit

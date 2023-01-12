@@ -1,8 +1,9 @@
-import {EmailActivateActivateCodeParam, UserTokenHeader} from "../../../../util/const";
+import {EmailActivateActivateCodeParam, UserLocalStorageKey, UserTokenHeader} from "../../../../util/const";
 import {useEffect, useState} from "react";
 import {userEmailActivate} from "../../../../api/user";
 import {LayoutFooterOnly} from "../../../../components/layout/layout";
 import {useRouter} from "next/router";
+import {noti} from "../../../../util/noti";
 
 
 enum AccountActivateState {
@@ -19,24 +20,26 @@ export default function EmailActivatePage() {
 
   useEffect(() => {
     if (route.isReady) {
-      const activateCode = route.query[EmailActivateActivateCodeParam] ? route.query[EmailActivateActivateCodeParam] as string : ""
-      doEmailActivate(activateCode)
+      let activateCode = route.query[EmailActivateActivateCodeParam]
+      if (!activateCode) {
+        doEmailActivate(activateCode as string)
+      } else {
+        noti.error("no activate code found")
+      }
     }
   },[route.isReady])
 
 
   const doEmailActivate = (activeCode: string) => {
     userEmailActivate(activeCode).then((resp) => {
-      console.log("resp is :", resp)
-      console.log(resp.headers[UserTokenHeader])
-      if (resp.data && resp.data.data && resp.data.data.hasOwnProperty("user") &&
+      if (resp.data && resp.data.data && resp.data.data.user &&
         resp.headers && resp.headers[UserTokenHeader]) {
-        localStorage.setItem("user", JSON.stringify(resp.data.data.user))
+        localStorage.setItem(UserLocalStorageKey, JSON.stringify(resp.data.data.user))
         localStorage.setItem(UserTokenHeader, resp.headers[UserTokenHeader])
         setAccountActivateState(AccountActivateState.Success)
       } else {
         setAccountActivateState(AccountActivateState.Fail)
-        setActivateFailReason("unable to process activate return data")
+        setActivateFailReason("unable to parse activate return data")
       }
     }).catch(({err, msg, isAuthFail}) => {
       setAccountActivateState(AccountActivateState.Fail)
@@ -45,17 +48,12 @@ export default function EmailActivatePage() {
   }
 
   return (
-    <div className="m-auto">
-      <p className="text-xl">
+    <div className="absolute top-0 right-0 bottom-0 left-0 flex">
+      <p className="m-auto text-xl">
         {accountActivateState == AccountActivateState.Begin && "activating, please wait a second 🌊"}
         {accountActivateState == AccountActivateState.Success && "your count has been activated 👏🥳👏"}
         {accountActivateState == AccountActivateState.Fail && `oops, activate failed, ${activateFailReason} 🤔`}
       </p>
     </div>
   )
-}
-
-// @ts-ignore
-EmailActivatePage.getLayout = (page) => {
-  return <LayoutFooterOnly>{page}</LayoutFooterOnly>
 }

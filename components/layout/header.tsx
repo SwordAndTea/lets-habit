@@ -1,22 +1,15 @@
-import {useEffect, useState} from "react";
-
+import {useRouter} from "next/router";
+import {RoutePath} from "../../util/const";
 
 function Header() {
-  const [userName, setUserName] = useState("unknown");
-
-  useEffect(() => {
-    return () => {
-      //TODO: get username from localstorage
-      setUserName("")
-    };
-  });
-
-
-  // eslint-disable-next-line react/jsx-key
+  const route = useRouter()
 
   return (
     <header className="flex bg-gray-800 border-b pb-1 pt-1 shadow-lg">
-      <button className="text-white mr-auto ml-4">
+      <button
+        className="text-white mr-auto ml-4"
+        onClick={()=>{route.replace(RoutePath.HomePage)}}
+      >
         Lets-Habit
       </button>
       {/*<div className={`w-14 h-14 mx-auto`}>*/}
