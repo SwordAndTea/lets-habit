@@ -1,6 +1,6 @@
 function Footer() {
   return (
-    <footer aria-label="Site Footer" className="bg-white text-center bg-gray-900 dark:bg-green-300">
+    <footer aria-label="Site Footer" className="bg-white text-center bg-gray-900">
       <div className="mx-auto max-w-screen-xl px-4 py-12 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl space-y-6">
           <div className="flex justify-center gap-6">

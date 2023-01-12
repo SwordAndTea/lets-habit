@@ -48,7 +48,7 @@ function HabitCard(props: HabitCardProps) {
 
   return (
     <div
-      className={`w-full border-1 rounded-xl shadow-[0px_0px_15px_rgba(0,0,0,0.3)]`}
+      className="w-full border-1 rounded-xl bg-white shadow-[0px_0px_15px_rgba(0,0,0,0.3)]"
     >
       <div className="ml-4 my-1 flex"> {/*container for habit title options button*/}
         <h1 className="text-4xl">{props.title}</h1>

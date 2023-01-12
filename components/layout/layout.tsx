@@ -28,7 +28,7 @@ export const LayoutHeaderFooter = ({children}) => {
           theme={atalhoTheme}
       />}
       <Header />
-      <div className="relative flex-1">
+      <div className="relative flex-1 bg-gray-100">
         {children}
       </div>
       <Footer />
@@ -59,7 +59,7 @@ export const LayoutFooterOnly = ({children}) => {
         // 4. Pass a builtIn theme or a custom theme.
           theme={atalhoTheme}
       />}
-      <div className="relative flex">
+      <div className="relative flex-1">
         {children}
       </div>
       <Footer />
