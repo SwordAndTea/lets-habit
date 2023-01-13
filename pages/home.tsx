@@ -1,4 +1,4 @@
-import {createContext, useContext, useEffect, useReducer, useState} from "react";
+import {createContext, useContext, useEffect, useReducer, useRef, useState} from "react";
 import {useRouter} from "next/router";
 import {EditIcon, DeleteIcon} from "../components/icons/icons";
 import {HabitIDURLParam, RoutePath, UserTokenHeader} from "../util/const";
@@ -25,26 +25,36 @@ interface HabitCardProps {
   onDeleteHabit: (habitID: string) => void
 }
 
-const defaultSelectedHabit = {habitID: ""}
-const selectedHabitContext = createContext({
-  selectedHabitInfo: defaultSelectedHabit,
-  dispatch(param: { payload: string; type: string }) {
-  }
-})
-const SELECT_HABIT_ACT = "habit/select"
-
-function reducer(state: { habitID: string }, action: { type: string, payload: string }) {
-  switch (action.type) {
-    case SELECT_HABIT_ACT:
-      return {habitID: action.payload}
-    default:
-      throw new Error(`unsupported action: ${action.type}`)
-  }
-}
 
 function HabitCard(props: HabitCardProps) {
   const [showOptions, setShowOptions] = useState(false)
-  const selectedHabitCtx = useContext(selectedHabitContext)
+  // const selectedHabitCtx = useContext(selectedHabitContext)
+  const optionBtnRef = useRef(null);
+  const optionListRef = useRef(null);
+
+  const handleOutsideClick = (e: Event) => {
+    if (!optionListRef.current || !optionBtnRef.current) {
+      return
+    }
+
+    // @ts-ignore
+    if (optionBtnRef.current.contains(e.target as Node)) {
+      return
+    }
+
+    // @ts-ignore
+    if (e.target != optionListRef.current && !optionListRef.current.contains(e.target as Node)) {
+      setShowOptions(false)
+    }
+  }
+
+  useEffect(() => {
+    document.addEventListener("click", handleOutsideClick)
+    return () => {
+      return document.removeEventListener("click", handleOutsideClick)
+    };
+  }, []);
+
 
   return (
     <div
@@ -54,15 +64,12 @@ function HabitCard(props: HabitCardProps) {
         <h1 className="text-4xl">{props.title}</h1>
         {/*options button*/}
         <div className="ml-auto relative flex">
-          <button className="m-auto"
-                  onClick={() => {
-                    if (selectedHabitCtx.selectedHabitInfo.habitID != props.habitID) {
-                      selectedHabitCtx.dispatch({type: SELECT_HABIT_ACT, payload: props.habitID})
-                      setShowOptions(true)
-                    } else {
-                      setShowOptions(!showOptions)
-                    }
-                  }}
+          <button
+            className="m-auto"
+            ref={optionBtnRef}
+            onClick={() => {
+              setShowOptions(!showOptions)
+            }}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -76,8 +83,11 @@ function HabitCard(props: HabitCardProps) {
               <circle cx="50%" cy="24" r="3"/>
             </svg>
           </button>
-          {selectedHabitCtx.selectedHabitInfo.habitID == props.habitID && showOptions && (
-            <ul className="absolute top-full right-4 rounded shadow-md bg-black text-amber-50">
+          {showOptions && (
+            <ul
+              className="absolute top-full right-1/2 rounded shadow-md bg-black text-amber-50"
+              ref={optionListRef}
+            >
               <li className="flex p-1.5 active:bg-gray-400 ">
                 <EditIcon className="fill-amber-50 mr-1" width="20" height="20"/>
                 <button onClick={() => {
@@ -121,10 +131,9 @@ function HabitCard(props: HabitCardProps) {
 
 export default function Home() {
   const [habitType, setHabitType] = useState(HabitType.Good)
-  const [selectedHabitInfo, dispatch] = useReducer(reducer, defaultSelectedHabit)
   const route = useRouter()
 
-  useEffect(()=> {
+  useEffect(() => {
     if (localStorage.getItem(UserTokenHeader) == null) { // TODO: replace with get habit list
       route.replace(RoutePath.LoginPage)
     }
@@ -152,7 +161,7 @@ export default function Home() {
       <div className="flex"> {/*top button container*/}
         {/*habits to form button*/}
         <button
-          className={`w-40 ml-auto p-2 rounded-l-md bg-slate-600 text-amber-50 ${habitType == HabitType.Good ? "translate-y-[3px] shadow-[inset_0px_2px_black]" : "hover:bg-slate-700 shadow-[0px_3px_black]"}`}
+          className={`w-40 ml-auto p-2 rounded-l-md bg-slate-600 text-amber-50 ${habitType == HabitType.Good ? "translate-y-[3px] shadow-[inset_0px_2px_gray]" : "hover:bg-slate-700 shadow-[0px_3px_gray]"}`}
           onClick={() => {
             if (habitType != HabitType.Good) {
               setHabitType(HabitType.Good)
@@ -163,7 +172,7 @@ export default function Home() {
         </button>
         {/*habits to discard button*/}
         <button
-          className={`w-40 mr-auto p-2 rounded-r-md bg-yellow-500 text-amber-50 ${habitType == HabitType.Bad ? "translate-y-[3px] shadow-[inset_0px_2px_black]" : "hover:bg-yellow-600 shadow-[0px_3px_black]"}`}
+          className={`w-40 mr-auto p-2 rounded-r-md bg-yellow-500 text-amber-50 ${habitType == HabitType.Bad ? "translate-y-[3px] shadow-[inset_0px_2px_gray]" : "hover:bg-yellow-600 shadow-[0px_3px_gray]"}`}
           onClick={() => {
             if (habitType != HabitType.Bad) {
               setHabitType(HabitType.Bad)
@@ -174,7 +183,7 @@ export default function Home() {
         </button>
         {/*new habit button*/}
         <button
-          className="flex h-10 p-2 absolute right-8 rounded-md bg-pink-400 text-amber-50 shadow-[0px_3px_black] active:translate-y-[3px] active:shadow-none"
+          className="flex h-10 p-2 absolute right-8 rounded-md bg-pink-400 text-amber-50 shadow-[0px_3px_gray] active:translate-y-[3px] active:shadow-none"
           onClick={toNewHabitPage}
         >
           New Habit
@@ -182,26 +191,24 @@ export default function Home() {
       </div>
 
       {/*habit table*/}
-      <selectedHabitContext.Provider value={{selectedHabitInfo, dispatch}}>
-        <ul className="px-8 my-6">
-          {[1, 2, 3].map((index) => {
-            return (
-              <li className="mb-8" key={index}>
-                <HabitCard
-                  habitID={index.toString()}
-                  title="test"
-                  habitType={habitType}
-                  checkFrequency="daily"
-                  checkDelayHour={0}
-                  remainRetroactiveChance={1}
-                  onEditHabit={toEditHabitPage}
-                  onDeleteHabit={doDeleteHabit}
-                />
-              </li>
-            )
-          })}
-        </ul>
-      </selectedHabitContext.Provider>
+      <ul className="px-8 my-6">
+        {[1, 2, 3].map((index) => {
+          return (
+            <li className="mb-8" key={index}>
+              <HabitCard
+                habitID={index.toString()}
+                title="test"
+                habitType={habitType}
+                checkFrequency="daily"
+                checkDelayHour={0}
+                remainRetroactiveChance={1}
+                onEditHabit={toEditHabitPage}
+                onDeleteHabit={doDeleteHabit}
+              />
+            </li>
+          )
+        })}
+      </ul>
     </div>
   )
 }

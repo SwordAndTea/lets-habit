@@ -3,6 +3,7 @@ import {useRouter} from "next/router";
 import {userEmailActivateResend} from "../../../../api/user";
 import {EmailIcon} from "../../../../components/icons/icons";
 import {RoutePath, UserLocalStorageKey, UserTokenHeader} from "../../../../util/const";
+import {GetLocalUserInfo} from "../../../../util/user";
 
 
 export default function EmailActivateSendPage() {
@@ -18,9 +19,8 @@ export default function EmailActivateSendPage() {
         route.push(RoutePath.LoginPage)
       }
 
-      let userInfo = localStorage.getItem(UserLocalStorageKey)
-      if (userInfo) {
-        let user = JSON.parse(userInfo)
+      let user = GetLocalUserInfo()
+      if (user) {
         if (user.user_register_type != "email" || user.email_active) {
           route.push(RoutePath.HomePage)
         }

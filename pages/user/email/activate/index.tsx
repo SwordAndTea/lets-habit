@@ -21,16 +21,19 @@ export default function EmailActivatePage() {
   useEffect(() => {
     if (route.isReady) {
       let activateCode = route.query[EmailActivateActivateCodeParam]
-      if (!activateCode) {
+      if (activateCode) {
         doEmailActivate(activateCode as string)
       } else {
         noti.error("no activate code found")
+        setAccountActivateState(AccountActivateState.Fail)
+        setActivateFailReason("no activate code found")
       }
     }
   },[route.isReady])
 
 
   const doEmailActivate = (activeCode: string) => {
+    setAccountActivateState(AccountActivateState.Begin)
     userEmailActivate(activeCode).then((resp) => {
       if (resp.data && resp.data.data && resp.data.data.user &&
         resp.headers && resp.headers[UserTokenHeader]) {
