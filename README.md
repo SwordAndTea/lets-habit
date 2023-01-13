@@ -1,6 +1,6 @@
 # Lets Habit (WIP)
 Yet another habit tracker, but it recommend you to form habits with your friends.
-Most habit tracker track your habits by yourself, it can be hard and require a lot of discipline to form a habit, and sometimes it feel bored. 
+Most habit tracker track your habits by yourself, it can be hard and require a lot of discipline to form a habit, and sometimes it feel bored.
 But with the help and supervision of our friends, I think we better to form a habit even with joy and fun.
 
 # Why this project
@@ -10,7 +10,17 @@ These are good tools to track and form habits, but each one of them lack some of
 In addition, I always wanted to start a side project, and this is my first side project. May be it's not a idea which can bring a profit for me, but I hope it will be a idea I can found some joy and challenge here.
 
 
-# My desired features besides a basic habit tracker 
+# My desired features besides a basic habit tracker
 - [ ] Track a habit with your friends (**The main Feature I want to build**, to form a habit with friends as a group, all of you in this group checked the habit today, then the habit is considered as checked)
 - [ ] Check time delay (I am a guy who often go to sleep after 0:00 AM, and I will check my habits before going to bed. As most of the habit tracker take 0:00 AM as the deadline, I usually has to complete the check of "yestarday", which makes me feel annoyed. If the deadline is set up to 2:00 AM or 3:00 AM, I can check all my habits of "today". I think this will be a good feature for the people who often stay up late.)
 - [ ] ...
+
+# Getting Started
+
+run the development server:
+
+```bash
+npm run dev
+# or
+yarn dev
+```
