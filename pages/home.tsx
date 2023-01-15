@@ -1,7 +1,8 @@
-import {createContext, useContext, useEffect, useReducer, useRef, useState} from "react";
+import { useEffect, useState} from "react";
 import {useRouter} from "next/router";
 import {EditIcon, DeleteIcon} from "../components/icons/icons";
 import {HabitIDURLParam, RoutePath, UserTokenHeader} from "../util/const";
+import {useDropdownHandleOutsideClick} from "../components/hooks";
 
 enum HabitType {
   Good,
@@ -27,34 +28,7 @@ interface HabitCardProps {
 
 
 function HabitCard(props: HabitCardProps) {
-  const [showOptions, setShowOptions] = useState(false)
-  // const selectedHabitCtx = useContext(selectedHabitContext)
-  const optionBtnRef = useRef(null);
-  const optionListRef = useRef(null);
-
-  const handleOutsideClick = (e: Event) => {
-    if (!optionListRef.current || !optionBtnRef.current) {
-      return
-    }
-
-    // @ts-ignore
-    if (optionBtnRef.current.contains(e.target as Node)) {
-      return
-    }
-
-    // @ts-ignore
-    if (e.target != optionListRef.current && !optionListRef.current.contains(e.target as Node)) {
-      setShowOptions(false)
-    }
-  }
-
-  useEffect(() => {
-    document.addEventListener("click", handleOutsideClick)
-    return () => {
-      return document.removeEventListener("click", handleOutsideClick)
-    };
-  }, []);
-
+  const [showOptionList, setShowOptionList, btnRef, optionListRef] = useDropdownHandleOutsideClick(true)
 
   return (
     <div
@@ -66,10 +40,7 @@ function HabitCard(props: HabitCardProps) {
         <div className="ml-auto relative flex">
           <button
             className="m-auto"
-            ref={optionBtnRef}
-            onClick={() => {
-              setShowOptions(!showOptions)
-            }}
+            ref={btnRef}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -83,7 +54,7 @@ function HabitCard(props: HabitCardProps) {
               <circle cx="50%" cy="24" r="3"/>
             </svg>
           </button>
-          {showOptions && (
+          {showOptionList && (
             <ul
               className="absolute top-full right-1/2 rounded shadow-md bg-black text-amber-50"
               ref={optionListRef}

@@ -1,31 +1,14 @@
 import {useRouter} from "next/router";
 import {RoutePath} from "../../util/const";
-import {useEffect, useRef, useState} from "react";
+import {useEffect, useState} from "react";
 import {GetLocalUserInfo, InitialUser, User} from "../../util/user";
+import {useDropdownHandleOutsideClick} from "../hooks";
 
 function Header() {
   const route = useRouter()
   const [userInfo, setUserInfo] = useState<User>(InitialUser);
   const defaultUserPortraitSrc = "/default-user-portrait.svg"
-  const [showUserCard, setShowUserCard] = useState(false)
-  const portraitRef = useRef(null);
-  const popRef = useRef(null);
-
-  const handleOutsideClick = (e: Event) => {
-    if (!popRef.current || !portraitRef.current) {
-      return
-    }
-
-    // @ts-ignore
-    if (portraitRef.current.contains(e.target as Node)) {
-      return
-    }
-
-    // @ts-ignore
-    if (e.target != popRef.current && !popRef.current.contains(e.target as Node)) {
-      setShowUserCard(false)
-    }
-  }
+  const [showOptionList, setShowOptionList, btnRef, optionListRef] = useDropdownHandleOutsideClick(true)
 
   useEffect(() => {
     if (route.isReady) {
@@ -33,10 +16,6 @@ function Header() {
       if (user) {
         setUserInfo(user)
       }
-    }
-    document.addEventListener("click", handleOutsideClick)
-    return ()=>{
-      document.removeEventListener("click", handleOutsideClick)
     }
   }, [route.isReady]);
 
@@ -53,18 +32,17 @@ function Header() {
       <div className="w-10 h-10 ml-auto mr-4 my-2 relative">
         <button
           className="w-10 h-10 rounded-full border-2 border-white overflow-hidden"
-          ref={portraitRef}
-          onClick={()=>{setShowUserCard(!showUserCard)}}
+          ref={btnRef}
         >
           <img
             src={(userInfo.portrait) ? userInfo.portrait : defaultUserPortraitSrc}
             alt="user-portrait"
           />
         </button>
-        {showUserCard && (
+        {showOptionList && (
           <ul
             className="absolute top-[125%] right-0 w-32 p-2 z-[999] bg-slate-600 rounded-lg"
-            ref={popRef}
+            ref={optionListRef}
           >
             <li>
               <h1 className="text-amber-50 text-xl">
@@ -74,7 +52,7 @@ function Header() {
             <li>
               <button
                 onClick={()=>{
-                  setShowUserCard(false)
+                  setShowOptionList(false)
                   route.push("/user/setting")
                 }}
               >

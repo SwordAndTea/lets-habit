@@ -4,14 +4,14 @@ export interface User {
   uid: string
   name: string | null
   email: string | null
-  email_activate: string | null
+  email_active: string | null
   portrait: string | null
   user_register_type: string
 }
 
 export const InitialUser = {
   email: "",
-  email_activate: null,
+  email_active: null,
   name: null,
   portrait: null,
   uid: "",

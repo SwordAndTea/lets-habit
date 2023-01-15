@@ -2,7 +2,7 @@ import {useEffect, useState} from "react";
 import {useRouter} from "next/router";
 import {userEmailActivateResend} from "../../../../api/user";
 import {EmailIcon} from "../../../../components/icons/icons";
-import {RoutePath, UserLocalStorageKey, UserTokenHeader} from "../../../../util/const";
+import {FullFlexContainerClass, RoutePath, UserTokenHeader} from "../../../../util/const";
 import {GetLocalUserInfo} from "../../../../util/user";
 
 
@@ -71,7 +71,7 @@ export default function EmailActivateSendPage() {
   }
 
   return (
-    <div className="absolute top-0 right-0 bottom-0 left-0 flex">
+    <div className={FullFlexContainerClass}>
       <div className="m-auto flex flex-col w-full px-10 space-y-6">
         <EmailIcon className="mx-auto w-32 h-32 mb-2 sm:w-20 sm:h-20"/>
         <p className="text-center">
