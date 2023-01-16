@@ -8,7 +8,7 @@ function Header() {
   const route = useRouter()
   const [userInfo, setUserInfo] = useState<User>(InitialUser);
   const defaultUserPortraitSrc = "/default-user-portrait.svg"
-  const [showOptionList, setShowOptionList, btnRef, optionListRef] = useDropdownHandleOutsideClick(true)
+  const [showOptionList, setShowOptionList, btnRef, optionListRef] = useDropdownHandleOutsideClick()
 
   useEffect(() => {
     if (route.isReady) {
@@ -33,6 +33,7 @@ function Header() {
         <button
           className="w-10 h-10 rounded-full border-2 border-white overflow-hidden"
           ref={btnRef}
+          onClick={()=>{setShowOptionList(!showOptionList)}}
         >
           <img
             src={(userInfo.portrait) ? userInfo.portrait : defaultUserPortraitSrc}

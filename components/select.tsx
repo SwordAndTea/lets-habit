@@ -9,7 +9,7 @@ interface SelectProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 export default function Select(props: SelectProps) {
-  const [showOptionList, setShowOptionList, btnRef, optionListRef] = useDropdownHandleOutsideClick(true)
+  const [showOptionList, setShowOptionList, btnRef, optionListRef] = useDropdownHandleOutsideClick()
   const {className, ...otherProps} = props
   const [selectedValue, setSelectedValue] = useState(props.defaultValue ? props.defaultValue : "")
 
@@ -27,6 +27,7 @@ export default function Select(props: SelectProps) {
     <button
       className={`relative flex px-1 ${className}`}
       ref={btnRef}
+      onClick={()=>{setShowOptionList(!showOptionList)}}
       {...otherProps}
     >
       <span className="my-auto">{selectedValue}</span>

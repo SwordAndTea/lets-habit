@@ -28,7 +28,7 @@ interface HabitCardProps {
 
 
 function HabitCard(props: HabitCardProps) {
-  const [showOptionList, setShowOptionList, btnRef, optionListRef] = useDropdownHandleOutsideClick(true)
+  const [showOptionList, setShowOptionList, btnRef, optionListRef] = useDropdownHandleOutsideClick()
 
   return (
     <div
@@ -41,6 +41,7 @@ function HabitCard(props: HabitCardProps) {
           <button
             className="m-auto"
             ref={btnRef}
+            onClick={()=>{setShowOptionList(!showOptionList)}}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
