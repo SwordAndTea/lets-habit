@@ -5,27 +5,39 @@ import {useDropdownHandleOutsideClick} from "./hooks";
 interface SelectProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   options: string[]
   defaultValue?: string
+  optionListContainerClassName?: string
+  optionListItemViewClassName?: string
   onValueChange?: (value: string) => void
 }
 
 export default function Select(props: SelectProps) {
+  const {
+    className,
+    options,
+    defaultValue,
+    optionListContainerClassName,
+    optionListItemViewClassName,
+    onValueChange, ...otherProps} = props
+
+  const [selectedValue, setSelectedValue] = useState(defaultValue ? defaultValue : "")
   const [showOptionList, setShowOptionList, btnRef, optionListRef] = useDropdownHandleOutsideClick()
-  const {className, ...otherProps} = props
-  const [selectedValue, setSelectedValue] = useState(props.defaultValue ? props.defaultValue : "")
 
   const handleOptionChoose = (e: React.MouseEvent<HTMLUListElement>) => {
     // @ts-ignore
-    let newValue = props.options[e.target.value]
+    let newValue = options[e.target.value]
     setSelectedValue(newValue)
     setShowOptionList(false)
-    if (props.onValueChange) {
-      props.onValueChange(newValue)
+    if (onValueChange) {
+      onValueChange(newValue)
     }
+    // if (btnRef.current) {
+    //   btnRef.current.blur()
+    // }
   }
 
   return (
     <button
-      className={`relative flex px-1 ${className}`}
+      className={`relative flex ${className}`}
       ref={btnRef}
       onClick={()=>{setShowOptionList(!showOptionList)}}
       {...otherProps}
@@ -45,12 +57,21 @@ export default function Select(props: SelectProps) {
       </svg>
       {showOptionList && (
         <ul
-          className="absolute top-[125%] left-0 right-0 bg-base-100 rounded-lg z-[999] bg-gray-200"
+          className={`absolute z-[999] top-[125%] left-0 right-0 bg-base-100 rounded-lg bg-gray-200 ${optionListContainerClassName}`}
           ref={optionListRef}
           onClick={handleOptionChoose}
         >
-          {props.options.map((value, index)=>{
-            return <li className={`text-left px-1 py-2 hover:bg-gray-300 ${index == 0 ? "rounded-t-lg":""} ${index == props.options.length - 1 ? "rounded-b-lg": ""}`} key={index} value={index}>{value}</li>
+          {options.map((value, index)=>{
+            return <li
+              className={`text-left py-2 hover:bg-gray-300
+              ${index == 0 ? "rounded-t-lg":""}
+              ${index == options.length - 1 ? "rounded-b-lg": ""}
+              ${optionListItemViewClassName}
+              `}
+              key={index}
+              value={index}>
+              {value}
+            </li>
           })}
         </ul>
       )}
