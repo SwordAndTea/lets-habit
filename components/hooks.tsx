@@ -26,9 +26,9 @@ export function useDropdownHandleOutsideClick(): [boolean, Dispatch<SetStateActi
     }
 
     if (showOptionList) {
-      document.addEventListener("mousedown", handleClickOutside)
+      document.addEventListener("click", handleClickOutside)
       return ()=> {
-        document.removeEventListener("mousedown", handleClickOutside)
+        document.removeEventListener("click", handleClickOutside)
       }
     }
 

@@ -1,10 +1,17 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {useDropdownHandleOutsideClick} from "./hooks";
 
 
-interface SelectProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+enum SelectDisplayType {
+  Collapse = "collapse",
+  Float = "float"
+}
+
+interface SelectProps extends React.ButtonHTMLAttributes<HTMLDivElement> {
   options: string[]
   defaultValue?: string
+  displayType?: string
+  buttonClassName?: string
   optionListContainerClassName?: string
   optionListItemViewClassName?: string
   onValueChange?: (value: string) => void
@@ -15,12 +22,16 @@ export default function Select(props: SelectProps) {
     className,
     options,
     defaultValue,
+    displayType,
+    buttonClassName,
     optionListContainerClassName,
     optionListItemViewClassName,
-    onValueChange, ...otherProps} = props
+    onValueChange, ...otherProps
+  } = props
 
   const [selectedValue, setSelectedValue] = useState(defaultValue ? defaultValue : "")
   const [showOptionList, setShowOptionList, btnRef, optionListRef] = useDropdownHandleOutsideClick()
+  const [isMouseClick, setIsMouseClick] = useState(false)
 
   const handleOptionChoose = (e: React.MouseEvent<HTMLUListElement>) => {
     // @ts-ignore
@@ -30,51 +41,72 @@ export default function Select(props: SelectProps) {
     if (onValueChange) {
       onValueChange(newValue)
     }
-    // if (btnRef.current) {
-    //   btnRef.current.blur()
-    // }
   }
 
+  useEffect(() => {
+    if (!showOptionList) {
+      setIsMouseClick(false)
+    }
+  }, [showOptionList])
+
   return (
-    <button
-      className={`relative flex ${className}`}
-      ref={btnRef}
-      onClick={()=>{setShowOptionList(!showOptionList)}}
-      {...otherProps}
-    >
-      <span className="my-auto">{selectedValue}</span>
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        className="h-4 w-4 my-auto ml-auto"
-        viewBox="0 0 20 20"
-        fill="currentColor"
+    <div className={`relative ${className}`} {...otherProps}>
+      <button
+        className={`w-full min-h-[44px] flex ${buttonClassName}`}
+        ref={btnRef}
+        onMouseDown={() => {
+          setIsMouseClick(true)
+        }}
+        onFocus={() => {
+          if (!isMouseClick) { // tab to show
+            setShowOptionList(true)
+          }
+        }}
+        onBlur={() => {
+          if (!isMouseClick) {// tab to hide
+            setShowOptionList(false)
+          }
+        }}
+        onClick={() => {
+          setShowOptionList(!showOptionList)
+        }}
       >
-        <path
-          fillRule="evenodd"
-          d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-          clipRule="evenodd"
-        />
-      </svg>
-      {showOptionList && (
-        <ul
-          className={`absolute z-[999] top-[125%] left-0 right-0 bg-base-100 rounded-lg bg-gray-200 ${optionListContainerClassName}`}
-          ref={optionListRef}
-          onClick={handleOptionChoose}
+        <span className="ml-2 my-auto">{selectedValue}</span>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="h-4 w-4 my-auto ml-auto mr-2"
+          viewBox="0 0 20 20"
+          fill="currentColor"
         >
-          {options.map((value, index)=>{
-            return <li
-              className={`text-left py-2 hover:bg-gray-300
-              ${index == 0 ? "rounded-t-lg":""}
-              ${index == options.length - 1 ? "rounded-b-lg": ""}
+          <path
+            fillRule="evenodd"
+            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+            clipRule="evenodd"
+          />
+        </svg>
+      </button>
+      <ul
+        className={`${displayType == SelectDisplayType.Float ? "absolute top-full left-0 right-0 z-[999]" : "w-full"}
+        rounded-lg bg-gray-200
+        transition-all duration-25 max-h-0 overflow-hidden
+        ${showOptionList ? "max-h-[150px] overflow-scroll" : ""}
+        ${optionListContainerClassName}`}
+        ref={optionListRef}
+        onClick={handleOptionChoose}
+      >
+        {options.map((value, index) => {
+          return <li
+            className={`text-left hover:bg-gray-300
+              ${index == 0 ? "rounded-t-lg" : ""}
+              ${index == options.length - 1 ? "rounded-b-lg" : ""}
               ${optionListItemViewClassName}
               `}
-              key={index}
-              value={index}>
-              {value}
-            </li>
-          })}
-        </ul>
-      )}
-    </button>
+            key={index}
+            value={index}>
+            {value}
+          </li>
+        })}
+      </ul>
+    </div>
   )
 }

@@ -1,8 +1,8 @@
 import {useEffect, useState} from "react";
 import {useRouter} from "next/router";
 import {userEmailActivateResend} from "../../../../api/user";
-import {EmailIcon} from "../../../../components/icons/icons";
-import {FullFlexContainerClass, RoutePath, UserTokenHeader} from "../../../../util/const";
+import {EmailIcon} from "../../../../components/icons";
+import {RoutePath, UserTokenHeader} from "../../../../util/const";
 import {GetLocalUserInfo} from "../../../../util/user";
 
 
@@ -71,21 +71,18 @@ export default function EmailActivateSendPage() {
   }
 
   return (
-    <div className={FullFlexContainerClass}>
-      <div className="m-auto flex flex-col w-full px-10 space-y-6">
-        <EmailIcon className="mx-auto w-32 h-32 mb-2 sm:w-20 sm:h-20"/>
-        <p className="text-center">
-          An account verify email has been sent to your mailbox, please check the email to activate your account
-        </p>
-        <button
-          className="mx-auto rounded-lg bg-rose-600 p-2 text-amber-50"
-          disabled={disableResend}
-          onClick={handleResendEmail}
-        >
-          {!disableResend ? "Email not received, resend" : `Try resend in (${retryResendWaitTime})s`}
-        </button>
-      </div>
+    <div className="m-auto flex flex-col w-full px-10 space-y-6">
+      <EmailIcon className="mx-auto w-32 h-32 mb-2 sm:w-20 sm:h-20"/>
+      <p className="text-center">
+        An account verify email has been sent to your mailbox, please check the email to activate your account
+      </p>
+      <button
+        className="mx-auto rounded-lg bg-rose-600 p-2 text-amber-50"
+        disabled={disableResend}
+        onClick={handleResendEmail}
+      >
+        {!disableResend ? "Email not received, resend" : `Try resend in (${retryResendWaitTime})s`}
+      </button>
     </div>
-
   )
 }

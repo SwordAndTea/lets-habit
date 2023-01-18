@@ -1,12 +1,10 @@
 import {
   EmailActivateActivateCodeParam,
-  FullFlexContainerClass,
   UserLocalStorageKey,
   UserTokenHeader
 } from "../../../../util/const";
 import {useEffect, useState} from "react";
 import {userEmailActivate} from "../../../../api/user";
-import {LayoutFooterOnly} from "../../../../components/layout/layout";
 import {useRouter} from "next/router";
 import {noti} from "../../../../util/noti";
 
@@ -56,8 +54,8 @@ export default function EmailActivatePage() {
   }
 
   return (
-    <div className={FullFlexContainerClass}>
-      <p className="m-auto text-xl">
+    <div className="m-auto">
+      <p className="text-xl">
         {accountActivateState == AccountActivateState.Begin && "activating, please wait a second 🌊"}
         {accountActivateState == AccountActivateState.Success && "your count has been activated 👏🥳👏"}
         {accountActivateState == AccountActivateState.Fail && `oops, activate failed, ${activateFailReason} 🤔`}

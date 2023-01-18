@@ -1,6 +1,6 @@
 import { useEffect, useState} from "react";
 import {useRouter} from "next/router";
-import {EditIcon, DeleteIcon} from "../components/icons/icons";
+import {EditIcon, DeleteIcon} from "../components/icons";
 import {HabitIDURLParam, RoutePath, UserTokenHeader} from "../util/const";
 import {useDropdownHandleOutsideClick} from "../components/hooks";
 
@@ -129,7 +129,7 @@ export default function Home() {
   }
 
   return (
-    <div className="my-4">
+    <div className="w-full my-4">
       <div className="flex"> {/*top button container*/}
         {/*habits to form button*/}
         <button

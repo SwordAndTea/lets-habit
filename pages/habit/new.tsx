@@ -1,58 +1,59 @@
-import {FullFlexContainerClass} from "../../util/const";
 import Select from "../../components/select";
 
 
 export default function NewHabitPage() {
-  const nameInputSpacing = "space-y-1"
+  const innerSpacing = "space-y-1"
   const spanTextClass = "text-gray-400"
-  const commonBlurRing = "ring-2 ring-gray-200"
-  const focusRingColor = "focus:ring-2 focus:ring-gray-400"
-  const inputFocusClear = "focus:outline-none focus:border-transparent"
+  const commonBlurRing = "ring-inset ring-2 ring-gray-200"
+  const commonFocusRing = "focus:outline-none focus:border-transparent focus:ring-inset focus:ring-2 focus:ring-gray-400"
 
-  const selectCommonClass = `w-full h-[42px] p-2 rounded-lg text-slate-600 ${commonBlurRing} ${focusRingColor}`
-  const selectItemCommonClass = "px-2 h-[42px]"
+  const selectCommonClass = `w-full min-h-[44px] rounded-lg text-slate-600 ${commonBlurRing} ${commonFocusRing}`
+  const selectItemCommonClass = "p-2 h-[44px]"
+
+  const textInputClass = `w-full h-[44px] rounded-lg border-transparent bg-transparent ${commonBlurRing} ${commonFocusRing}`
 
   return (
-    <div className={FullFlexContainerClass}>
-      <div className="w-full px-10 py-6">
-        <div className="m-auto space-y-6">
-          <div className={nameInputSpacing}>
-            <span className={spanTextClass}>Habit Name</span>
-            <input
-              type="text"
-              className={`w-full rounded-lg border-transparent bg-transparent ${commonBlurRing} ${inputFocusClear} ${focusRingColor}`}
-            />
-          </div>
-          <div className={nameInputSpacing}>
-            <span className={spanTextClass}>Habit Type</span>
-            <Select
-              className={selectCommonClass}
-              optionListItemViewClassName={selectItemCommonClass}
-              options={["Habit To From", "Habit To Discard"]}
-              defaultValue="Habit To From"
-            />
-          </div>
-          <div className={nameInputSpacing}>
-            <span className={spanTextClass}>Check Frequency</span>
-            <Select
-              className={selectCommonClass}
-              optionListItemViewClassName={selectItemCommonClass}
-              options={["Every Day", "Once A Week"]}
-              defaultValue="Every Day"
-            />
-          </div>
-          <div className={nameInputSpacing}>
-            <span className={spanTextClass}>Delay Time</span>
-            <Select
-              className={selectCommonClass}
-              optionListItemViewClassName={selectItemCommonClass}
-              options={["No Delay", "Next Day 4:00 AM"]}
-              defaultValue="No Delay"
-            />
-          </div>
+    <div className="w-full px-8 py-6">
+      <div className="m-auto space-y-6">
+        <div className={innerSpacing}>
+          <span className={spanTextClass}>Habit Name</span>
+          <input type="text" className={textInputClass}/>
+        </div>
+        <div className={innerSpacing}>
+          <span className={spanTextClass}>Habit Type</span>
+          <Select
+            buttonClassName={selectCommonClass}
+            optionListItemViewClassName={selectItemCommonClass}
+            options={["Habit To From", "Habit To Discard"]}
+            defaultValue="Habit To From"
+          />
+        </div>
+        <div className={innerSpacing}>
+          <span className={spanTextClass}>Check Frequency</span>
+          <Select
+            buttonClassName={selectCommonClass}
+            optionListItemViewClassName={selectItemCommonClass}
+            options={["Daily", "Weekly", "Monthly"]}
+            defaultValue="Daily"
+          />
+        </div>
+        <div className={innerSpacing}>
+          <span className={spanTextClass}>Delay Time</span>
+          <Select
+            buttonClassName={selectCommonClass}
+            optionListItemViewClassName={selectItemCommonClass}
+            options={["No Delay", "Next Day 4:00 AM"]}
+            defaultValue="No Delay"
+          />
+        </div>
+        <div className={innerSpacing}>
+          <span className={spanTextClass}>Identity To From</span>
+          <input type="text" className={textInputClass}/>
+        </div>
+        <div className={innerSpacing}>
+          <span className={spanTextClass}>Friends To Invite</span>
         </div>
       </div>
-
     </div>
   )
 }

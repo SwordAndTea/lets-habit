@@ -21,7 +21,7 @@ function Header() {
 
 
   return (
-    <header className="flex bg-slate-900 border-b pb-1 pt-1 shadow-lg">
+    <header className="flex bg-black border-b pb-1 pt-1 shadow-lg">
       <button
         className="text-white mr-auto ml-4"
         onClick={()=>{route.replace(RoutePath.HomePage)}}
