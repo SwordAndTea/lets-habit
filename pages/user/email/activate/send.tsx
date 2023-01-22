@@ -63,7 +63,7 @@ export default function EmailActivateSendPage() {
     localStorage.setItem(lastResendEmailAtKey, Math.floor(current.getTime() / 1000).toString())
     countDownForResend(defaultResentWaitTime)
     // do resend
-    userEmailActivateResend().catch(({err, msg, isAuthFail}) => {
+    userEmailActivateResend().catch(({isAuthFail}) => {
       if (isAuthFail) {
         route.push(RoutePath.LoginPage)
       }

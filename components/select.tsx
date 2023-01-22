@@ -52,7 +52,7 @@ export default function Select(props: SelectProps) {
   return (
     <div className={`relative ${className}`} {...otherProps}>
       <button
-        className={`w-full min-h-[44px] flex ${buttonClassName}`}
+        className={`w-full flex ${buttonClassName}`}
         ref={btnRef}
         onMouseDown={() => {
           setIsMouseClick(true)
@@ -96,11 +96,7 @@ export default function Select(props: SelectProps) {
       >
         {options.map((value, index) => {
           return <li
-            className={`text-left hover:bg-gray-300
-              ${index == 0 ? "rounded-t-lg" : ""}
-              ${index == options.length - 1 ? "rounded-b-lg" : ""}
-              ${optionListItemViewClassName}
-              `}
+            className={`text-left hover:bg-gray-300 ${optionListItemViewClassName}`}
             key={index}
             value={index}>
             {value}

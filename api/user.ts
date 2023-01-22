@@ -3,6 +3,7 @@ import {reqHandler} from "./base";
 export const getUserInfo = async () => {
   return reqHandler.get(`/api/v1/user`)
 }
+
 export const userLoginByEmail = async (email: string, passport: string) => {
   return reqHandler.post(`/api/v1/user/login/email`, {email: email, password: passport})
 }
@@ -19,3 +20,6 @@ export const userEmailActivate = async (activeCode: string) => {
   return reqHandler.post(`/api/v1/user/register/email/activate`, {activate_code: activeCode})
 }
 
+export const userSearch = async (text: string) => {
+  return reqHandler.post(`/api/v1/user/search`, {name_or_uid: text})
+}

@@ -1,4 +1,5 @@
 import Select from "../../components/select";
+import {UserSearcher} from "../../components/search";
 
 
 export default function NewHabitPage() {
@@ -7,7 +8,7 @@ export default function NewHabitPage() {
   const commonBlurRing = "ring-inset ring-2 ring-gray-200"
   const commonFocusRing = "focus:outline-none focus:border-transparent focus:ring-inset focus:ring-2 focus:ring-gray-400"
 
-  const selectCommonClass = `w-full min-h-[44px] rounded-lg text-slate-600 ${commonBlurRing} ${commonFocusRing}`
+  const selectCommonClass = `min-h-[44px] rounded-lg text-slate-600 ${commonBlurRing} ${commonFocusRing}`
   const selectItemCommonClass = "p-2 h-[44px]"
 
   const textInputClass = `w-full h-[44px] rounded-lg border-transparent bg-transparent ${commonBlurRing} ${commonFocusRing}`
@@ -22,6 +23,7 @@ export default function NewHabitPage() {
         <div className={innerSpacing}>
           <span className={spanTextClass}>Habit Type</span>
           <Select
+            className="w-full"
             buttonClassName={selectCommonClass}
             optionListItemViewClassName={selectItemCommonClass}
             options={["Habit To From", "Habit To Discard"]}
@@ -31,6 +33,7 @@ export default function NewHabitPage() {
         <div className={innerSpacing}>
           <span className={spanTextClass}>Check Frequency</span>
           <Select
+            className="w-full"
             buttonClassName={selectCommonClass}
             optionListItemViewClassName={selectItemCommonClass}
             options={["Daily", "Weekly", "Monthly"]}
@@ -40,6 +43,7 @@ export default function NewHabitPage() {
         <div className={innerSpacing}>
           <span className={spanTextClass}>Delay Time</span>
           <Select
+            className="w-full"
             buttonClassName={selectCommonClass}
             optionListItemViewClassName={selectItemCommonClass}
             options={["No Delay", "Next Day 4:00 AM"]}
@@ -52,6 +56,10 @@ export default function NewHabitPage() {
         </div>
         <div className={innerSpacing}>
           <span className={spanTextClass}>Friends To Invite</span>
+          <UserSearcher
+            className={`w-full ${commonBlurRing} focus-within:ring-inset focus-within:ring-2 focus-within:ring-gray-400`}
+            inputClassName={`border-transparent bg-transparent focus:outline-none focus:border-transparent focus:ring-0`}
+          />
         </div>
       </div>
     </div>

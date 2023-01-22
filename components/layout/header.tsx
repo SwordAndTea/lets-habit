@@ -3,11 +3,11 @@ import {RoutePath} from "../../util/const";
 import {useEffect, useState} from "react";
 import {GetLocalUserInfo, InitialUser, User} from "../../util/user";
 import {useDropdownHandleOutsideClick} from "../hooks";
+import {DefaultUserPortraitIcon} from "../icons";
 
 function Header() {
   const route = useRouter()
   const [userInfo, setUserInfo] = useState<User>(InitialUser);
-  const defaultUserPortraitSrc = "/default-user-portrait.svg"
   const [showOptionList, setShowOptionList, btnRef, optionListRef] = useDropdownHandleOutsideClick()
 
   useEffect(() => {
@@ -22,6 +22,7 @@ function Header() {
 
   return (
     <header className="flex bg-black border-b pb-1 pt-1 shadow-lg">
+      {/*logo*/}
       <button
         className="text-white mr-auto ml-4"
         onClick={()=>{route.replace(RoutePath.HomePage)}}
@@ -35,10 +36,7 @@ function Header() {
           ref={btnRef}
           onClick={()=>{setShowOptionList(!showOptionList)}}
         >
-          <img
-            src={(userInfo.portrait) ? userInfo.portrait : defaultUserPortraitSrc}
-            alt="user-portrait"
-          />
+          {userInfo.portrait ? <img src={userInfo.portrait} alt="user-portrait"/> : <DefaultUserPortraitIcon fill="white"/>}
         </button>
         {showOptionList && (
           <ul
