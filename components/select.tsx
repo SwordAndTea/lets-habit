@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useState} from "react";
 import {useDropdownHandleOutsideClick} from "./hooks";
 
 
@@ -31,7 +31,6 @@ export default function Select(props: SelectProps) {
 
   const [selectedValue, setSelectedValue] = useState(defaultValue ? defaultValue : "")
   const [showOptionList, setShowOptionList, btnRef, optionListRef] = useDropdownHandleOutsideClick()
-  const [isMouseClick, setIsMouseClick] = useState(false)
 
   const handleOptionChoose = (e: React.MouseEvent<HTMLUListElement>) => {
     // @ts-ignore
@@ -43,30 +42,11 @@ export default function Select(props: SelectProps) {
     }
   }
 
-  useEffect(() => {
-    if (!showOptionList) {
-      setIsMouseClick(false)
-    }
-  }, [showOptionList])
-
   return (
     <div className={`relative ${className}`} {...otherProps}>
       <button
         className={`w-full flex ${buttonClassName}`}
         ref={btnRef}
-        onMouseDown={() => {
-          setIsMouseClick(true)
-        }}
-        onFocus={() => {
-          if (!isMouseClick) { // tab to show
-            setShowOptionList(true)
-          }
-        }}
-        onBlur={() => {
-          if (!isMouseClick) {// tab to hide
-            setShowOptionList(false)
-          }
-        }}
         onClick={() => {
           setShowOptionList(!showOptionList)
         }}

@@ -15,3 +15,5 @@ export const UserTokenHeader = "x-lh-auth"
 export const UserLocalStorageKey = "user"
 
 export const HabitIDURLParam = "habit-id"
+
+export const AnonymousUsername = "Unknown"

@@ -1,27 +1,34 @@
 import React, {useState} from "react";
-import {DefaultUserPortraitIcon, PlusIcon, SpinWaitIndicatorIcon} from "./icons";
+import {DefaultUserPortraitIcon, PlusIcon, SpinWaitIndicatorIcon, SquareCheckIcon} from "./icons";
 import {useDropdownHandleOutsideClick} from "./hooks";
 import {userSearch} from "../api/user";
 import {noti} from "../util/noti";
+import {AnonymousUsername} from "../util/const";
+import {GetEventPath} from "../util/event";
+import {SimplifiedUser} from "../util/user";
 
 
 interface UserItemProps {
-  portrait: string
-  name: string
-  uid: string
+  user: SimplifiedUser
+  selected?: boolean
 }
 
 function UserItem(props: UserItemProps) {
   return (
-    <div className="flex w-full">
+    <div className="flex w-full h-full">
       {/*portrait*/}
-      <div className="w-10 h-10 rounded-full border-2 border-black mx-2 my-auto overflow-hidden">
-        {props.portrait ? <img src={props.portrait} alt="user-portrait"/> : <DefaultUserPortraitIcon/>}
+      <div className="h-5/6 aspect-square rounded-full border-2 border-black mx-2 my-auto overflow-hidden">
+        {props.user.portrait ? <img src={props.user.portrait} alt="user-portrait"/> : <DefaultUserPortraitIcon/>}
       </div>
-      <div className="flex-1 mr-2">
-        <h1>{props.name ? props.name : "unknown"}</h1>
-        <span className="text-sm text-gray-500">{props.uid}</span>
+      {/*name and uid*/}
+      <div className="flex-1 mr-2 h-full">
+        <h1>{props.user.name ? props.user.name : "unknown"}</h1>
+        <span className="text-sm text-gray-500">{props.user.uid}</span>
       </div>
+      {/*selected indicator*/}
+      {props.selected && (
+        <SquareCheckIcon className="mr-2 my-auto h-1/2 aspect-square" />
+      )}
     </div>
   )
 }
@@ -36,7 +43,7 @@ function UserCard(props: UserCardProps) {
 
   return (
     <div
-      className="relative flex m-2 border w-52"
+      className="relative flex m-1 mr-0 border w-40 bg-gray-300"
       onMouseEnter={() => {
         setShowDeleteBtn(true)
       }}
@@ -45,14 +52,15 @@ function UserCard(props: UserCardProps) {
       }}
     >
       {/*portrait*/}
-      <div className="w-10 h-10 rounded-full border-2 border-black mx-2 my-auto overflow-hidden">
-        {props.portrait ? <img src={props.portrait} alt="user-portrait"/> : <DefaultUserPortraitIcon/>}
+      <div className="h-5/6 aspect-square rounded-full border-2 border-black mx-1 my-auto overflow-hidden">
+        {props.user.portrait ? <img src={props.user.portrait} alt="user-portrait"/> : <DefaultUserPortraitIcon/>}
       </div>
-      <h1>{props.name ? props.name : "unknown"}</h1>
+      <span className="my-auto flex-1 text-ellipsis overflow-hidden text-center">{props.user.name ? props.user.name : AnonymousUsername}</span>
 
+      {/*delete btn*/}
       {showDeleteBtn && (
         <button
-          className="absolute top-0 right-0 rounded-full bg-gray-300"
+          className="absolute top-0 right-0 rounded-full bg-black"
           onClick={props.onDelete}
         >
           <PlusIcon fill="gray" className="rotate-45 w-3 h-3"/>
@@ -64,8 +72,8 @@ function UserCard(props: UserCardProps) {
 
 interface UserSearcherProps extends React.HtmlHTMLAttributes<HTMLDivElement> {
   inputClassName?: string
-  resultContainerClass?: string
-  resultItemClass?: string
+  resultContainerClassName?: string
+  resultItemClassName?: string
 }
 
 enum UserSearcherState {
@@ -77,11 +85,13 @@ enum UserSearcherState {
 
 export function UserSearcher(props: UserSearcherProps) {
   const [searchTimer, setSearchTimer] = useState<NodeJS.Timeout | null>(null)
-  const [searchResult, setSearchResult] = useState<UserItemProps[]>([])
+  const [searchResult, setSearchResult] = useState<SimplifiedUser[]>([])
   const [showOptionList, setShowOptionList, btnRef, optionListRef] = useDropdownHandleOutsideClick()
   const [searchState, setSearchState] = useState(UserSearcherState.Waiting)
 
-  const {className, inputClassName, resultContainerClass, resultItemClass, ...otherProps} = props
+  const {className, inputClassName, resultContainerClassName, resultItemClassName, ...otherProps} = props
+
+  const [selectedUsers, setSelectedUsers] = useState<SimplifiedUser[]>([])
 
   const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (searchTimer) {
@@ -109,12 +119,47 @@ export function UserSearcher(props: UserSearcherProps) {
       setSearchState(UserSearcherState.Waiting)
     }
   }
+
+  const handleUserChoose = (e: React.MouseEvent<HTMLUListElement>)=>{
+    let path = GetEventPath(e)
+    if (path.length >= 2) {
+      let li = path[path.length-2]
+      let chosenUser = searchResult[li.value]
+      for (let u of selectedUsers) {
+        if (u.uid == chosenUser.uid) {
+          return
+        }
+      }
+      setSelectedUsers([...selectedUsers, chosenUser])
+    }
+  }
+
   return (
     <div
       className={`relative flex ${className}`}
+      onKeyDown={(e) =>{
+        switch (e.key) {
+          case "Backspace":
+            // @ts-ignore
+            if (!btnRef.current.value && selectedUsers.length != 0) {
+              let copy = [...selectedUsers]
+              copy.pop()
+              setSelectedUsers(copy)
+            }
+            break
+          case "Escape":
+            setShowOptionList(false)
+            break
+        }
+      }}
       {...otherProps}
     >
-      <UserCard portrait="" name="" uid="" />
+      {selectedUsers.map((value, index) => {
+        return <UserCard key={index} user={value} onDelete={() => {
+          setSelectedUsers(selectedUsers.filter(a => a.uid != value.uid))
+        }}/>
+      })}
+
       <input
         type="text"
         className={`w-full ${inputClassName}`}
@@ -127,21 +172,24 @@ export function UserSearcher(props: UserSearcherProps) {
           }
         }}
         onChange={onInputChange}
-      >
-      </input>
+      />
       {showOptionList && (
         <div
-          className={`absolute top-full left-0 right-0 w-full rounded-lg flex flex-col overflow-y-scroll ${resultContainerClass}`}
+          className={`absolute z-[999] top-full left-0 right-0 w-full rounded-lg flex flex-col overflow-y-scroll min-h-[200px] bg-gray-200 ${resultContainerClassName}`}
           ref={optionListRef}
         >
           {searchState == UserSearcherState.Searching &&
             <SpinWaitIndicatorIcon className="m-auto fill-transparent w-10 h-10"/>}
           {searchState == UserSearcherState.Success && searchResult.length > 0 && (
-            <ul>
+            <ul onClick={handleUserChoose}>
               {searchResult.map((value, index) => {
                 return (
-                  <li key={index} className={`${resultItemClass}`}>
-                    <UserItem {...value}/>
+                  <li
+                    key={index}
+                    value={index}
+                    className={`h-12 hover:bg-gray-300 ${resultItemClassName}`}
+                  >
+                    <UserItem user={value} selected={selectedUsers.findIndex(a => a.uid == value.uid) != -1}/>
                   </li>
                 )
               })}

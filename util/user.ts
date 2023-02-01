@@ -18,6 +18,12 @@ export const InitialUser = {
   user_register_type: ""
 }
 
+export interface SimplifiedUser {
+  uid: string
+  name: string | null
+  portrait: string | null
+}
+
 export function GetLocalUserInfo(): User | null {
   let userInfo = localStorage.getItem(UserLocalStorageKey)
   if (userInfo) {
