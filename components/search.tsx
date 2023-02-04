@@ -22,19 +22,19 @@ function UserItem(props: UserItemProps) {
       </div>
       {/*name and uid*/}
       <div className="flex-1 mr-2 h-full">
-        <h1>{props.user.name ? props.user.name : "unknown"}</h1>
+        <h1>{props.user.name ? props.user.name : AnonymousUsername}</h1>
         <span className="text-sm text-gray-500">{props.user.uid}</span>
       </div>
       {/*selected indicator*/}
       {props.selected && (
-        <SquareCheckIcon className="mr-2 my-auto h-1/2 aspect-square" />
+        <SquareCheckIcon className="mr-2 my-auto h-1/2 aspect-square"/>
       )}
     </div>
   )
 }
 
 interface UserCardProps extends UserItemProps {
-  onDelete?: () => void
+  onDelete?: (e: React.MouseEvent<HTMLButtonElement>) => void
 }
 
 function UserCard(props: UserCardProps) {
@@ -43,7 +43,7 @@ function UserCard(props: UserCardProps) {
 
   return (
     <div
-      className="relative flex m-1 mr-0 border w-40 bg-gray-300"
+      className="relative flex m-1 mr-0 border max-w-[200px] bg-gray-300 rounded"
       onMouseEnter={() => {
         setShowDeleteBtn(true)
       }}
@@ -52,10 +52,11 @@ function UserCard(props: UserCardProps) {
       }}
     >
       {/*portrait*/}
-      <div className="h-5/6 aspect-square rounded-full border-2 border-black mx-1 my-auto overflow-hidden">
+      <div className="h-5/6 aspect-square rounded-full border-2 border-black ml-2 mr-1 my-auto overflow-hidden">
         {props.user.portrait ? <img src={props.user.portrait} alt="user-portrait"/> : <DefaultUserPortraitIcon/>}
       </div>
-      <span className="my-auto flex-1 text-ellipsis overflow-hidden text-center">{props.user.name ? props.user.name : AnonymousUsername}</span>
+      <span
+        className="my-auto mr-2 flex-1 text-ellipsis overflow-hidden">{props.user.name ? props.user.name : AnonymousUsername}</span>
 
       {/*delete btn*/}
       {showDeleteBtn && (
@@ -74,6 +75,7 @@ interface UserSearcherProps extends React.HtmlHTMLAttributes<HTMLDivElement> {
   inputClassName?: string
   resultContainerClassName?: string
   resultItemClassName?: string
+  onSelectUserChange?: (users: SimplifiedUser[]) => void
 }
 
 enum UserSearcherState {
@@ -117,27 +119,32 @@ export function UserSearcher(props: UserSearcherProps) {
       setSearchTimer(newTimer)
     } else {
       setSearchState(UserSearcherState.Waiting)
+      setShowOptionList(false)
     }
   }
 
-  const handleUserChoose = (e: React.MouseEvent<HTMLUListElement>)=>{
+  const handleUserChoose = (e: React.MouseEvent<HTMLUListElement>) => {
     let path = GetEventPath(e)
     if (path.length >= 2) {
-      let li = path[path.length-2]
+      let li = path[path.length - 2]
       let chosenUser = searchResult[li.value]
       for (let u of selectedUsers) {
         if (u.uid == chosenUser.uid) {
           return
         }
       }
-      setSelectedUsers([...selectedUsers, chosenUser])
+      let newUserList = [...selectedUsers, chosenUser]
+      setSelectedUsers(newUserList)
+      if (props.onSelectUserChange) {
+        props.onSelectUserChange(newUserList)
+      }
     }
   }
 
   return (
     <div
       className={`relative flex ${className}`}
-      onKeyDown={(e) =>{
+      onKeyDown={(e) => {
         switch (e.key) {
           case "Backspace":
             // @ts-ignore
@@ -145,6 +152,9 @@ export function UserSearcher(props: UserSearcherProps) {
               let copy = [...selectedUsers]
               copy.pop()
               setSelectedUsers(copy)
+              if (props.onSelectUserChange) {
+                props.onSelectUserChange(copy)
+              }
             }
             break
           case "Escape":
@@ -155,7 +165,8 @@ export function UserSearcher(props: UserSearcherProps) {
       {...otherProps}
     >
       {selectedUsers.map((value, index) => {
-        return <UserCard key={index} user={value} onDelete={() => {
+        return <UserCard key={index} user={value} onDelete={(e) => {
+          e.stopPropagation()
           setSelectedUsers(selectedUsers.filter(a => a.uid != value.uid))
         }}/>
       })}
@@ -175,7 +186,7 @@ export function UserSearcher(props: UserSearcherProps) {
       />
       {showOptionList && (
         <div
-          className={`absolute z-[999] top-full left-0 right-0 w-full rounded-lg flex flex-col overflow-y-scroll min-h-[200px] bg-gray-200 ${resultContainerClassName}`}
+          className={`absolute z-50 top-full left-0 right-0 w-full rounded-lg flex flex-col overflow-y-scroll min-h-[200px] bg-gray-200 ${resultContainerClassName}`}
           ref={optionListRef}
         >
           {searchState == UserSearcherState.Searching &&

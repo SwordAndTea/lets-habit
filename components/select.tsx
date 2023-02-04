@@ -66,7 +66,7 @@ export default function Select(props: SelectProps) {
         </svg>
       </button>
       <ul
-        className={`${displayType == SelectDisplayType.Float ? "absolute top-full left-0 right-0 z-[999]" : "w-full"}
+        className={`${displayType == SelectDisplayType.Float ? "absolute top-full left-0 right-0 z-50" : "w-full"}
         rounded-lg bg-gray-200
         transition-all duration-25 max-h-0 overflow-hidden
         ${showOptionList ? "max-h-[150px] overflow-scroll" : ""}

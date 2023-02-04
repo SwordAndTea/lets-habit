@@ -25,7 +25,9 @@ function Header() {
       {/*logo*/}
       <button
         className="text-white mr-auto ml-4"
-        onClick={()=>{route.replace(RoutePath.HomePage)}}
+        onClick={() => {
+          route.replace(RoutePath.HomePage)
+        }}
       >
         Lets-Habit
       </button>
@@ -34,13 +36,16 @@ function Header() {
         <button
           className="w-10 h-10 rounded-full border-2 border-white overflow-hidden"
           ref={btnRef}
-          onClick={()=>{setShowOptionList(!showOptionList)}}
+          onClick={() => {
+            setShowOptionList(!showOptionList)
+          }}
         >
-          {userInfo.portrait ? <img src={userInfo.portrait} alt="user-portrait"/> : <DefaultUserPortraitIcon fill="white"/>}
+          {userInfo.portrait ? <img src={userInfo.portrait} alt="user-portrait"/> :
+            <DefaultUserPortraitIcon fill="white"/>}
         </button>
         {showOptionList && (
           <ul
-            className="absolute top-[125%] right-0 w-32 p-2 z-[999] bg-slate-600 rounded-lg"
+            className="absolute top-[125%] right-0 w-32 p-2 z-50 bg-slate-600 rounded-lg"
             ref={optionListRef}
           >
             <li>
@@ -50,7 +55,7 @@ function Header() {
             </li>
             <li>
               <button
-                onClick={()=>{
+                onClick={() => {
                   setShowOptionList(false)
                   route.push("/user/setting")
                 }}
