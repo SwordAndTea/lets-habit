@@ -57,7 +57,7 @@ export default function EmailActivatePage() {
     <div className="m-auto">
       <p className="text-xl">
         {accountActivateState == AccountActivateState.Begin && "activating, please wait a second 🌊"}
-        {accountActivateState == AccountActivateState.Success && "your count has been activated 👏🥳👏"}
+        {accountActivateState == AccountActivateState.Success && "your account has been activated 👏🥳👏"}
         {accountActivateState == AccountActivateState.Fail && `oops, activate failed, ${activateFailReason} 🤔`}
       </p>
     </div>

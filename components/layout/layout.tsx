@@ -28,7 +28,7 @@ export const LayoutHeaderFooter = ({children}) => {
           theme={atalhoTheme}
       />}
       <Header />
-      <div className="flex-1 flex bg-gray-100">
+      <div className="flex-1 flex">
         {children}
       </div>
       <Footer />

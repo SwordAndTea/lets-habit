@@ -1,4 +1,4 @@
-import {GenGradientColor} from "../util/color";
+import {GenColorPalette} from "../util/color";
 import {DateToDateStr} from "../util/date";
 import React from "react";
 
@@ -12,28 +12,23 @@ interface HeatmapProps extends React.SVGAttributes<SVGElement> {
   endDate: Date
   data: HeatmapData[] | null
   color: string /*hex rgb color*/
+  singleColor?: boolean
 }
 
 // Heatmap return a calendar heat map
 // TODO:
 //  1. add hover popup message
 export default function Heatmap(props: HeatmapProps) {
-  let {startDate, endDate, data, color, ...svgProps} = props
+  let {startDate, endDate, data, color, singleColor, ...svgProps} = props
   let startDay = startDate.getDay()
   let endDay = endDate.getDay()
   let numberOfDays = (endDate.getTime() - startDate.getTime()) / (24 * 3600 * 1000)
   let middleColumnNum = (numberOfDays - (7 - startDay) - endDay) / 7
-  let totalColumnNum = middleColumnNum + (startDay > 0 ? 1 : 0) + (endDay < 6 ? 1 : 0)
+  let totalColumnNum = middleColumnNum + (startDay > 0 ? 1 : 0) + 1
 
   let verticalSpace = 2
   let horizontalSpace = 2
   let rectSideLength = 16
-  let gradientColorCount = 9
-  let lightColorCount = 4
-  let gradientColor = GenGradientColor(color, lightColorCount, gradientColorCount)
-  gradientColor = gradientColor.filter((value, index) => {
-    return index % 2 == 0 //only pick half gradient color
-  })
   let viewBoxWidth = totalColumnNum * rectSideLength + (totalColumnNum - 1) * horizontalSpace
   let viewBoxHeight = 7 * rectSideLength + (7 - 1) * verticalSpace
 
@@ -47,6 +42,14 @@ export default function Heatmap(props: HeatmapProps) {
         maxValue = d.value
       }
     }
+  }
+
+  //
+  let gradientColor: string[] = []
+  if (!singleColor) {
+    gradientColor = GenColorPalette(color).filter((value, index, array) => {
+      return index >= 1 && index <= array.length - 2 //only pick half gradient color
+    })
   }
 
   let columns = []
@@ -66,28 +69,28 @@ export default function Heatmap(props: HeatmapProps) {
     for (let j = startIndex; j < endIndex; j++) {
       let dataStr = DateToDateStr(currenDate)
       let value = dataMap.get(dataStr)
-      let rgb = {
-        r: 238,
-        g: 238,
-        b: 238
-      } // default gray color
+      let rgb = "#D3D3D3" // default gray color
 
       // calculate color if current date has a value
-      if (value !== undefined && maxValue != 0) {
-        let index = Math.floor(value * gradientColor.length / maxValue) - 1
-        rgb = gradientColor[index]
+      if (value !== undefined && value > 0 && maxValue != 0) {
+        if (singleColor) {
+          rgb = color
+        } else {
+          let index = Math.ceil(value * gradientColor.length / maxValue) - 1
+          rgb = gradientColor[index]
+        }
       }
 
       rows.push(
         <rect
           key={dataStr}
           x="0"
-          y={(j + 1) * rectSideLength + j * verticalSpace}
+          y={j * rectSideLength + j * verticalSpace}
           width={rectSideLength}
           height={rectSideLength}
           rx="2"
           ry="2"
-          fill={`rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`}
+          fill={rgb}
           className={"bg-gray"}
         />
       )

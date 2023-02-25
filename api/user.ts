@@ -1,5 +1,10 @@
 import {reqHandler} from "./base";
 
+
+export const userPing = async () => {
+  return reqHandler.get(`/api/v1/user/ping`)
+}
+
 export const getUserInfo = async () => {
   return reqHandler.get(`/api/v1/user`)
 }

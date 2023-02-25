@@ -4,7 +4,7 @@ import '@testing-library/jest-dom'
 import Heatmap from "./heatmap"
 
 describe("TestHeatmap", () => {
-  it('should create a heatmap', function () {
+  it('should create a heatmap',  () => {
     let startDay = new Date()
     let endDay = new Date()
     startDay.setDate(startDay.getDate() - 360)

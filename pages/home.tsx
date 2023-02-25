@@ -1,47 +1,44 @@
-import { useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {useRouter} from "next/router";
 import {EditIcon, DeleteIcon} from "../components/icons";
 import {HabitIDURLParam, RoutePath, UserTokenHeader} from "../util/const";
 import {useDropdownHandleOutsideClick} from "../components/hooks";
+import {getUserInfo} from "../api/user";
+import {HandleUserResp} from "../util/user";
+import {listHabit} from "../api/habit";
+import {noti} from "../util/noti";
+import {DetailedHabit} from "../util/habit";
+import {Pagination} from "../components/pagination";
+import Heatmap from "../components/heatmap";
 
-enum HabitType {
-  Good,
-  Bad,
-}
-
-enum HabitCheckFrequency {
-  Daily,
-  Weekly,
-}
 
 interface HabitCardProps {
-  habitID: string
-  title: string
-  habitType: HabitType
-  checkFrequency: string
-  checkDelayHour: number
-  remainRetroactiveChance: number
-
-  onEditHabit: (habitID: string) => void
-  onDeleteHabit: (habitID: string) => void
+  habit: DetailedHabit
+  onEditHabit: (habitID: number) => void
+  onDeleteHabit: (habitID: number) => void
 }
 
 
 function HabitCard(props: HabitCardProps) {
   const [showOptionList, setShowOptionList, btnRef, optionListRef] = useDropdownHandleOutsideClick()
+  let endDate = new Date()
+  let startDate = new Date()
+  startDate.setDate(endDate.getDate() - 365)
 
   return (
     <div
       className="w-full border-1 rounded-xl bg-white shadow-[0px_0px_15px_rgba(0,0,0,0.3)]"
     >
       <div className="ml-4 my-1 flex"> {/*container for habit title options button*/}
-        <h1 className="text-4xl">{props.title}</h1>
+        <h1 className="text-4xl">{props.habit.habit.name}</h1>
         {/*options button*/}
         <div className="ml-auto relative flex">
           <button
             className="m-auto"
             ref={btnRef}
-            onClick={()=>{setShowOptionList(!showOptionList)}}
+            onClick={() => {
+              setShowOptionList(!showOptionList)
+            }}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -63,7 +60,7 @@ function HabitCard(props: HabitCardProps) {
               <li className="flex p-1.5 active:bg-gray-400 ">
                 <EditIcon className="fill-amber-50 mr-1" width="20" height="20"/>
                 <button onClick={() => {
-                  props.onEditHabit(props.habitID)
+                  props.onEditHabit(props.habit.habit.id)
                 }}>
                   edit
                 </button>
@@ -71,7 +68,7 @@ function HabitCard(props: HabitCardProps) {
               <li className="flex p-1.5 active:bg-gray-400 ">
                 <DeleteIcon className="fill-red-600 mr-1" width="20" height="20"/>
                 <button className="text-red-600" onClick={() => {
-                  props.onDeleteHabit(props.habitID)
+                  props.onDeleteHabit(props.habit.habit.id)
                 }}>
                   delete
                 </button>
@@ -81,13 +78,26 @@ function HabitCard(props: HabitCardProps) {
 
         </div>
       </div>
-      {/*TODO: replace with calender heatmap*/}
-      <div className="mx-4 my-1 h-[200px] border"/>
+      {/*TODO: replace with heatmap*/}
+      <Heatmap
+        className="mx-8 my-3"
+        color={props.habit.user_custom_config.heatmap_color}
+        data={props.habit.check_records ? props.habit.check_records.map((value) => {
+          return {
+            date: new Date(value.check_at),
+            value: 1
+          }
+        }) : []}
+        startDate={startDate}
+        endDate={endDate}
+        singleColor
+      />
 
-      <span className="ml-4 my-1 block text-lg">{`check frequency: ${props.checkFrequency}`}</span>
+      {/*<span className="ml-4 my-1 block text-lg">{`check frequency: ${props.checkFrequency}`}</span>*/}
       <span
-        className="ml-4 my-1 block text-lg">{`check deadline: ${props.checkDelayHour == 0 ? "today 24:00" : `next day ${props.checkDelayHour}:00`}`}</span>
-      <span className="ml-4 my-1 block text-lg">{`remain retroactive chance: ${props.remainRetroactiveChance}`}</span>
+        className="ml-4 my-1 block text-lg">{`check deadline: ${props.habit.habit.check_deadline_delay == 0 ? "today 24:00" : `next day ${props.habit.habit.check_deadline_delay}:00`}`}</span>
+      <span
+        className="ml-4 my-1 block text-lg">{`remain retroactive chance: ${props.habit.user_custom_config.remain_recheck_chance}`}</span>
       <button
         className="ml-4 my-1"
         onClick={() => {
@@ -102,20 +112,39 @@ function HabitCard(props: HabitCardProps) {
 
 
 export default function Home() {
-  const [habitType, setHabitType] = useState(HabitType.Good)
   const route = useRouter()
+  const pageSize = 5
+
+  const [page, setPage] = useState(1)
+  const [habits, setHabits] = useState<DetailedHabit[]>([])
+  const [totalHabitNum, setTotalHabitNum] = useState(0)
 
   useEffect(() => {
-    if (localStorage.getItem(UserTokenHeader) == null) { // TODO: replace with get habit list
+    if (localStorage.getItem(UserTokenHeader) == null) {
       route.replace(RoutePath.LoginPage)
     }
-  })
+    getUserInfo().then((resp) => {
+      HandleUserResp(resp, route)
+      listHabit(1, pageSize).then((resp) => {
+        if (resp.data && resp.data.data && resp.data.data.habits && resp.data.data.total) {
+          setHabits(resp.data.data.habits)
+          setTotalHabitNum(resp.data.data.total)
+        } else {
+          noti.error("cannot parse get habits response")
+        }
+      })
+    }).catch(({isAuthFail}) => {
+      if (isAuthFail) {
+        route.replace(RoutePath.LoginPage)
+      }
+    })
+  }, [])
 
   const toNewHabitPage = () => {
     route.push(RoutePath.NewHabitPage)
   }
 
-  const toEditHabitPage = (habitID: string) => {
+  const toEditHabitPage = (habitID: number) => {
     let query = {}
     // @ts-ignore
     query[HabitIDURLParam] = habitID
@@ -124,38 +153,15 @@ export default function Home() {
     })
   }
 
-  const doDeleteHabit = (habitID: string) => {
+  const doDeleteHabit = (habitID: number) => {
 
   }
 
   return (
-    <div className="w-full my-4">
-      <div className="flex"> {/*top button container*/}
-        {/*habits to form button*/}
+    <div className="w-full py-4 px-28 space-y-6">
+      <div className="flex">
         <button
-          className={`w-40 ml-auto p-2 rounded-l-md bg-slate-600 text-amber-50 ${habitType == HabitType.Good ? "translate-y-[3px] shadow-[inset_0px_2px_gray]" : "hover:bg-slate-700 shadow-[0px_3px_gray]"}`}
-          onClick={() => {
-            if (habitType != HabitType.Good) {
-              setHabitType(HabitType.Good)
-            }
-          }}
-        >
-          Habits to form
-        </button>
-        {/*habits to discard button*/}
-        <button
-          className={`w-40 mr-auto p-2 rounded-r-md bg-yellow-500 text-amber-50 ${habitType == HabitType.Bad ? "translate-y-[3px] shadow-[inset_0px_2px_gray]" : "hover:bg-yellow-600 shadow-[0px_3px_gray]"}`}
-          onClick={() => {
-            if (habitType != HabitType.Bad) {
-              setHabitType(HabitType.Bad)
-            }
-          }}
-        >
-          Habits to discard
-        </button>
-        {/*new habit button*/}
-        <button
-          className="flex h-10 p-2 absolute right-8 rounded-md bg-pink-400 text-amber-50 shadow-[0px_3px_gray] active:translate-y-[3px] active:shadow-none"
+          className="h-10 p-2 ml-auto rounded-md bg-pink-400 text-amber-50 shadow-[0px_3px_gray] active:translate-y-[3px] active:shadow-none"
           onClick={toNewHabitPage}
         >
           New Habit
@@ -163,17 +169,12 @@ export default function Home() {
       </div>
 
       {/*habit table*/}
-      <ul className="px-8 my-6">
-        {[1, 2, 3].map((index) => {
+      <ul className="my-6">
+        {habits.map((value, index) => {
           return (
             <li className="mb-8" key={index}>
               <HabitCard
-                habitID={index.toString()}
-                title="test"
-                habitType={habitType}
-                checkFrequency="daily"
-                checkDelayHour={0}
-                remainRetroactiveChance={1}
+                habit={value}
                 onEditHabit={toEditHabitPage}
                 onDeleteHabit={doDeleteHabit}
               />
@@ -181,6 +182,28 @@ export default function Home() {
           )
         })}
       </ul>
+      <span className="block text-right text-gray-500">
+        <span className="text-red-500">*</span> notice: all habits&apos; check deadline is next day 4:00 AM after the check day
+      </span>
+      <div className="w-full flex">
+        <div className="m-auto">
+          <Pagination
+            currentPage={page}
+            totalPage={Math.ceil(totalHabitNum / pageSize)}
+            toPreviousPage={() => {
+              if (page > 2) {
+                setPage(page - 1)
+              }
+            }}
+            toNextPage={() => {
+              if (page < Math.ceil(totalHabitNum / pageSize)) {
+                setPage(page + 1)
+              }
+            }}
+          />
+        </div>
+      </div>
+
     </div>
   )
 }

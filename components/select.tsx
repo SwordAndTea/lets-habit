@@ -1,16 +1,11 @@
 import React, {useState} from "react";
 import {useDropdownHandleOutsideClick} from "./hooks";
-
-
-enum SelectDisplayType {
-  Collapse = "collapse",
-  Float = "float"
-}
+import {PopViewDisplayType, PopViewDisplayTypeFloat} from "./common";
 
 interface SelectProps extends React.ButtonHTMLAttributes<HTMLDivElement> {
   options: string[]
   defaultValue?: string
-  displayType?: string
+  displayType?: PopViewDisplayType
   buttonClassName?: string
   optionListContainerClassName?: string
   optionListItemViewClassName?: string
@@ -52,6 +47,7 @@ export default function Select(props: SelectProps) {
         }}
       >
         <span className="ml-2 my-auto">{selectedValue}</span>
+        {/*indicator icon*/}
         <svg
           xmlns="http://www.w3.org/2000/svg"
           className="h-4 w-4 my-auto ml-auto mr-2"
@@ -66,11 +62,11 @@ export default function Select(props: SelectProps) {
         </svg>
       </button>
       <ul
-        className={`${displayType == SelectDisplayType.Float ? "absolute top-full left-0 right-0 z-50" : "w-full"}
-        rounded-lg bg-gray-200
-        transition-all duration-25 max-h-0 overflow-hidden
-        ${showOptionList ? "max-h-[150px] overflow-scroll" : ""}
-        ${optionListContainerClassName}`}
+        className={`${displayType == PopViewDisplayTypeFloat ? "absolute top-full left-0 right-0 z-50" : "w-full"}
+          rounded-lg bg-gray-200
+          transition-all duration-200
+          ${showOptionList ? "max-h-[150px] overflow-scroll" : "max-h-0 overflow-hidden"}
+          ${optionListContainerClassName}`}
         ref={optionListRef}
         onClick={handleOptionChoose}
       >

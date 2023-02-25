@@ -1,10 +1,11 @@
-import {getUserInfo, userLoginByEmail, userRegisterByEmail} from "../api/user";
+import {userLoginByEmail, userPing, userRegisterByEmail} from "../api/user";
 import React, {useEffect, useState} from "react";
 import {LayoutFooterOnly} from "../components/layout/layout";
 import {useRouter} from "next/router";
 import {noti} from "../util/noti";
 import {SpinWaitIndicatorIcon, WeChatIcon} from "../components/icons";
 import {RoutePath, UserTokenHeader} from "../util/const";
+import {HandleUserResp} from "../util/user";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -16,7 +17,7 @@ export default function Login() {
 
   useEffect(() => {
     if (route.isReady && localStorage.getItem(UserTokenHeader)) {
-      getUserInfo().then(() => {
+      userPing().then(() => {
         route.push(RoutePath.HomePage)
       })
     }
@@ -36,11 +37,7 @@ export default function Login() {
       // do sign up
       setDisableSignInSignUp(true)
       userRegisterByEmail(email, password).then((resp) => {
-        if (resp.data && resp.data.data && resp.data.data.user && resp.headers && resp.headers[UserTokenHeader]) {
-          localStorage.setItem("user", JSON.stringify(resp.data.data.user))
-          localStorage.setItem(UserTokenHeader, resp.headers[UserTokenHeader])
-          route.push(RoutePath.EmailActivateSendPage)
-        } else {
+        if (!HandleUserResp(resp, route)) {
           noti.error("can not parse sign up return data")
         }
       }).finally(() => {
@@ -50,15 +47,7 @@ export default function Login() {
       // do sign in
       setDisableSignInSignUp(true)
       userLoginByEmail(email, password).then((resp) => {
-        if (resp.data && resp.data.data && resp.data.data.user && resp.headers && resp.headers[UserTokenHeader]) {
-          localStorage.setItem("user", JSON.stringify(resp.data.data.user))
-          localStorage.setItem(UserTokenHeader, resp.headers[UserTokenHeader])
-          if (resp.data.data.user.user_register_type == "email" && !resp.data.data.user.email_active) {
-            route.push(RoutePath.EmailActivateSendPage)
-          } else {
-            route.push(RoutePath.HomePage)
-          }
-        } else {
+        if (!HandleUserResp(resp, route)) {
           noti.error("unable to parse login return data")
         }
       }).finally(() => {

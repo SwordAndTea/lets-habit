@@ -6,6 +6,7 @@ import {noti} from "../util/noti";
 import {AnonymousUsername} from "../util/const";
 import {GetEventPath} from "../util/event";
 import {SimplifiedUser} from "../util/user";
+import {PopViewDisplayType, PopViewDisplayTypeFloat} from "./common";
 
 
 interface UserItemProps {
@@ -43,7 +44,7 @@ function UserCard(props: UserCardProps) {
 
   return (
     <div
-      className="relative flex m-1 mr-0 border max-w-[200px] bg-gray-300 rounded"
+      className="relative flex m-1 mr-0 border min-w-[120px] max-w-[200px] bg-gray-300 rounded"
       onMouseEnter={() => {
         setShowDeleteBtn(true)
       }}
@@ -72,6 +73,7 @@ function UserCard(props: UserCardProps) {
 }
 
 interface UserSearcherProps extends React.HtmlHTMLAttributes<HTMLDivElement> {
+  displayType?: PopViewDisplayType
   inputClassName?: string
   resultContainerClassName?: string
   resultItemClassName?: string
@@ -91,7 +93,7 @@ export function UserSearcher(props: UserSearcherProps) {
   const [showOptionList, setShowOptionList, btnRef, optionListRef] = useDropdownHandleOutsideClick()
   const [searchState, setSearchState] = useState(UserSearcherState.Waiting)
 
-  const {className, inputClassName, resultContainerClassName, resultItemClassName, ...otherProps} = props
+  const {className, displayType, inputClassName, resultContainerClassName, resultItemClassName, onSelectUserChange, ...otherProps} = props
 
   const [selectedUsers, setSelectedUsers] = useState<SimplifiedUser[]>([])
 
@@ -135,83 +137,114 @@ export function UserSearcher(props: UserSearcherProps) {
       }
       let newUserList = [...selectedUsers, chosenUser]
       setSelectedUsers(newUserList)
-      if (props.onSelectUserChange) {
-        props.onSelectUserChange(newUserList)
+      if (onSelectUserChange) {
+        onSelectUserChange(newUserList)
       }
     }
   }
 
   return (
-    <div
-      className={`relative flex ${className}`}
-      onKeyDown={(e) => {
-        switch (e.key) {
-          case "Backspace":
-            // @ts-ignore
-            if (!btnRef.current.value && selectedUsers.length != 0) {
-              let copy = [...selectedUsers]
-              copy.pop()
-              setSelectedUsers(copy)
-              if (props.onSelectUserChange) {
-                props.onSelectUserChange(copy)
+    <div className="relative">
+      <div
+        className={`flex flex-wrap ${className}`}
+        onKeyDown={(e) => {
+          switch (e.key) {
+            case "Backspace":
+              // @ts-ignore
+              if (!btnRef.current.value && selectedUsers.length != 0) {
+                let copy = [...selectedUsers]
+                copy.pop()
+                setSelectedUsers(copy)
+                if (props.onSelectUserChange) {
+                  props.onSelectUserChange(copy)
+                }
               }
-            }
-            break
-          case "Escape":
-            setShowOptionList(false)
-            break
-        }
-      }}
-      {...otherProps}
-    >
-      {selectedUsers.map((value, index) => {
-        return <UserCard key={index} user={value} onDelete={(e) => {
-          e.stopPropagation()
-          setSelectedUsers(selectedUsers.filter(a => a.uid != value.uid))
-        }}/>
-      })}
-
-      <input
-        type="text"
-        className={`w-full ${inputClassName}`}
-        placeholder="type user name or user uid"
-        ref={btnRef}
-        onFocus={() => {
-          // @ts-ignore
-          if (btnRef.current.value) {
-            setShowOptionList(true)
+              break
+            case "Escape":
+              setShowOptionList(false)
+              break
           }
         }}
-        onChange={onInputChange}
-      />
-      {showOptionList && (
-        <div
-          className={`absolute z-50 top-full left-0 right-0 w-full rounded-lg flex flex-col overflow-y-scroll min-h-[200px] bg-gray-200 ${resultContainerClassName}`}
-          ref={optionListRef}
-        >
-          {searchState == UserSearcherState.Searching &&
-            <SpinWaitIndicatorIcon className="m-auto fill-transparent w-10 h-10"/>}
-          {searchState == UserSearcherState.Success && searchResult.length > 0 && (
-            <ul onClick={handleUserChoose}>
-              {searchResult.map((value, index) => {
-                return (
-                  <li
-                    key={index}
-                    value={index}
-                    className={`h-12 hover:bg-gray-300 ${resultItemClassName}`}
-                  >
-                    <UserItem user={value} selected={selectedUsers.findIndex(a => a.uid == value.uid) != -1}/>
-                  </li>
-                )
-              })}
-            </ul>
-          )}
-          {searchState == UserSearcherState.Success && searchResult.length == 0 && (
-            <span className="m-auto">no results</span>)}
-          {searchState == UserSearcherState.Fail && <span className="m-auto">search fail</span>}
-        </div>
-      )}
+        {...otherProps}
+      >
+        {selectedUsers.map((value, index) => {
+          return <UserCard key={index} user={value} onDelete={(e) => {
+            e.stopPropagation()
+            setSelectedUsers(selectedUsers.filter(a => a.uid != value.uid))
+          }}/>
+        })}
 
+        <input
+          type="text"
+          className={`flex-1 ${inputClassName}`}
+          placeholder="type user name or user uid"
+          ref={btnRef}
+          onFocus={() => {
+            // @ts-ignore
+            if (btnRef.current.value) {
+              setShowOptionList(true)
+            }
+          }}
+          onChange={onInputChange}
+        />
+      </div>
+      {/*{showOptionList && (*/}
+      {/*  <div*/}
+      {/*    className={`absolute z-50 top-full left-0 right-0 w-full rounded-lg flex flex-col overflow-y-scroll min-h-[200px] bg-gray-200 ${resultContainerClassName}`}*/}
+      {/*    ref={optionListRef}*/}
+      {/*  >*/}
+      {/*    {searchState == UserSearcherState.Searching &&*/}
+      {/*      <SpinWaitIndicatorIcon className="m-auto fill-transparent w-10 h-10"/>}*/}
+      {/*    {searchState == UserSearcherState.Success && searchResult.length > 0 && (*/}
+      {/*      <ul onClick={handleUserChoose}>*/}
+      {/*        {searchResult.map((value, index) => {*/}
+      {/*          return (*/}
+      {/*            <li*/}
+      {/*              key={index}*/}
+      {/*              value={index}*/}
+      {/*              className={`h-12 hover:bg-gray-300 ${resultItemClassName}`}*/}
+      {/*            >*/}
+      {/*              <UserItem user={value} selected={selectedUsers.findIndex(a => a.uid == value.uid) != -1}/>*/}
+      {/*            </li>*/}
+      {/*          )*/}
+      {/*        })}*/}
+      {/*      </ul>*/}
+      {/*    )}*/}
+      {/*    {searchState == UserSearcherState.Success && searchResult.length == 0 && (*/}
+      {/*      <span className="m-auto">no results</span>)}*/}
+      {/*    {searchState == UserSearcherState.Fail && <span className="m-auto">search fail</span>}*/}
+      {/*  </div>*/}
+      {/*)}*/}
+      <div
+        className={`${displayType == PopViewDisplayTypeFloat ? "absolute z-50 top-full left-0 right-0" : "w-full"}
+          rounded-lg bg-gray-200
+          transition-all duration-300
+          flex flex-col
+          ${showOptionList ? "h-[200px] overflow-scroll" : "h-0 overflow-hidden"}
+          ${resultContainerClassName}`}
+        ref={optionListRef}
+      >
+        {showOptionList && searchState == UserSearcherState.Searching &&
+          <SpinWaitIndicatorIcon className="m-auto fill-transparent w-10 h-10"/>}
+        {showOptionList && searchState == UserSearcherState.Success && searchResult.length > 0 && (
+          <ul onClick={handleUserChoose}>
+            {searchResult.map((value, index) => {
+              return (
+                <li
+                  key={index}
+                  value={index}
+                  className={`h-12 hover:bg-gray-300 ${resultItemClassName}`}
+                >
+                  <UserItem user={value} selected={selectedUsers.findIndex(a => a.uid == value.uid) != -1}/>
+                </li>
+              )
+            })}
+          </ul>
+        )}
+        {showOptionList && searchState == UserSearcherState.Success && searchResult.length == 0 && (
+          <span className="m-auto">no results</span>)}
+        {showOptionList && searchState == UserSearcherState.Fail && <span className="m-auto">search fail</span>}
+      </div>
     </div>
   )
 }
