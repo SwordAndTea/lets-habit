@@ -1,0 +1,64 @@
+
+.editNewOutsideContainer {
+  @apply relative w-full px-36 py-6;
+}
+
+.editNewForm {
+  @apply w-full space-y-6;
+}
+
+.editNewWaitIndicatorMask {
+  @apply absolute z-50 top-0 right-0 bottom-0 left-0 flex bg-gray-400/25;
+}
+
+.editNewWaitIndicator {
+  @apply m-auto w-10 h-10;
+}
+
+.editNewBlurRing {
+  @apply ring-inset ring-2 ring-gray-200;
+}
+
+.editNewFocusRing {
+  @apply focus:outline-none focus:border-transparent focus:ring-inset focus:ring-2 focus:ring-gray-400;
+}
+
+.editNewTextInput {
+  @apply w-full h-[44px] rounded-lg border-transparent bg-transparent editNewBlurRing editNewFocusRing;
+}
+
+.editNewUserSearcher {
+  @apply w-full min-h-[44px] rounded-lg editNewBlurRing focus-within:ring-inset focus-within:ring-2 focus-within:ring-gray-400
+}
+
+.editNewUserSearcherInput {
+  @apply border-transparent bg-transparent focus:outline-none focus:border-transparent focus:ring-0;
+}
+
+.editNewWeekdayChooser {
+  @apply w-full rounded-lg p-2 editNewBlurRing;
+}
+
+.editNewHeatmap {
+  @apply rounded-lg p-4 editNewBlurRing;
+}
+
+.editNewBtnContainer {
+  @apply flex mt-6;
+}
+
+.editNewCancelBtn {
+  @apply ml-auto bg-gray-300 text-rose-500 w-24 h-10 rounded-lg;
+}
+
+.editNewConfirmBtn {
+  @apply ml-4 bg-black text-white w-24 h-10 rounded-lg;
+}
+
+.editNewSelect {
+  @apply h-[44px] rounded-lg text-slate-600 editNewBlurRing editNewFocusRing;
+}
+
+.editNewSelectOption {
+  @apply h-[44px] p-2;
+}

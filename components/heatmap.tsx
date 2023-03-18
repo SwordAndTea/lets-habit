@@ -12,14 +12,16 @@ interface HeatmapProps extends React.SVGAttributes<SVGElement> {
   endDate: Date
   data: HeatmapData[] | null
   color: string /*hex rgb color*/
+  fillAll?: boolean
   singleColor?: boolean
+  elementSideLength?: number
 }
 
 // Heatmap return a calendar heat map
 // TODO:
 //  1. add hover popup message
 export default function Heatmap(props: HeatmapProps) {
-  let {startDate, endDate, data, color, singleColor, ...svgProps} = props
+  let {startDate, endDate, data, color, fillAll, singleColor, ...svgProps} = props
   let startDay = startDate.getDay()
   let endDay = endDate.getDay()
   let numberOfDays = (endDate.getTime() - startDate.getTime()) / (24 * 3600 * 1000)
@@ -28,7 +30,7 @@ export default function Heatmap(props: HeatmapProps) {
 
   let verticalSpace = 2
   let horizontalSpace = 2
-  let rectSideLength = 16
+  let rectSideLength = props.elementSideLength !== undefined ? props.elementSideLength : 10
   let viewBoxWidth = totalColumnNum * rectSideLength + (totalColumnNum - 1) * horizontalSpace
   let viewBoxHeight = 7 * rectSideLength + (7 - 1) * verticalSpace
 
@@ -72,7 +74,9 @@ export default function Heatmap(props: HeatmapProps) {
       let rgb = "#D3D3D3" // default gray color
 
       // calculate color if current date has a value
-      if (value !== undefined && value > 0 && maxValue != 0) {
+      if (fillAll) {
+        rgb = color
+      } else if (value !== undefined && value > 0 && maxValue != 0) {
         if (singleColor) {
           rgb = color
         } else {

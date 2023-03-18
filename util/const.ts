@@ -16,5 +16,7 @@ export const UserLocalStorageKey = "user"
 
 export const HabitIDURLParam = "habit-id"
 
+export const HabitToEdit = "habit-to-edit"
+
 export const AnonymousUsername = "unknown"
 

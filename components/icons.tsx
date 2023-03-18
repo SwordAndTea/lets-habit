@@ -164,3 +164,17 @@ export function SquareCheckIcon(props: React.SVGAttributes<SVGElement>) {
     </svg>
   )
 }
+
+export function OptionsIcon(props: React.SVGAttributes<SVGElement>) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 6 32"
+      {...props}
+    >
+      <circle cx="50%" cy="8" r="3"/>
+      <circle cx="50%" cy="16" r="3"/>
+      <circle cx="50%" cy="24" r="3"/>
+    </svg>
+  )
+}

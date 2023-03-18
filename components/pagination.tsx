@@ -8,10 +8,10 @@ interface PaginationProps {
 export function Pagination(props: PaginationProps) {
   return (
     <div className="inline-flex items-center justify-center gap-3">
-      <a
-        href="#"
+      <button
         className="inline-flex h-8 w-8 items-center justify-center rounded border border-gray-100"
         onClick={props.toPreviousPage}
+        disabled={props.currentPage == 1}
       >
         <span className="sr-only">Next Page</span>
         <svg
@@ -26,18 +26,18 @@ export function Pagination(props: PaginationProps) {
             clipRule="evenodd"
           />
         </svg>
-      </a>
+      </button>
 
-      <p className="text-xs">
+      <p className="text-xs select-none">
         {props.currentPage}
         <span className="mx-0.25">/</span>
         {props.totalPage}
       </p>
 
-      <a
-        href="#"
+      <button
         className="inline-flex h-8 w-8 items-center justify-center rounded border border-gray-100"
         onClick={props.toNextPage}
+        disabled={props.currentPage == props.totalPage}
       >
         <span className="sr-only">Next Page</span>
         <svg
@@ -52,7 +52,7 @@ export function Pagination(props: PaginationProps) {
             clipRule="evenodd"
           />
         </svg>
-      </a>
+      </button>
     </div>
 
   )

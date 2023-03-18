@@ -2,6 +2,8 @@ import axios from "axios";
 import {noti} from "../util/noti";
 import {UserTokenHeader} from "../util/const";
 
+export const apiV1 = "api/v1"
+
 export const reqHandler = axios.create({
   baseURL: process.env.NEXT_PUBLIC_BACKEND_HOST
 })

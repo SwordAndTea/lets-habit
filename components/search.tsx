@@ -35,23 +35,14 @@ function UserItem(props: UserItemProps) {
 }
 
 interface UserCardProps extends UserItemProps {
+  cannotDelete?: boolean
   onDelete?: (e: React.MouseEvent<HTMLButtonElement>) => void
 }
 
 function UserCard(props: UserCardProps) {
 
-  const [showDeleteBtn, setShowDeleteBtn] = useState(false)
-
   return (
-    <div
-      className="relative flex m-1 mr-0 border min-w-[120px] max-w-[200px] bg-gray-300 rounded"
-      onMouseEnter={() => {
-        setShowDeleteBtn(true)
-      }}
-      onMouseLeave={() => {
-        setShowDeleteBtn(false)
-      }}
-    >
+    <div className="relative flex m-1 mr-0 border min-w-[120px] max-w-[200px] bg-gray-300 rounded hover-show-parent">
       {/*portrait*/}
       <div className="h-5/6 aspect-square rounded-full border-2 border-black ml-2 mr-1 my-auto overflow-hidden">
         {props.user.portrait ? <img src={props.user.portrait} alt="user-portrait"/> : <DefaultUserPortraitIcon/>}
@@ -60,9 +51,9 @@ function UserCard(props: UserCardProps) {
         className="my-auto mr-2 flex-1 text-ellipsis overflow-hidden">{props.user.name ? props.user.name : AnonymousUsername}</span>
 
       {/*delete btn*/}
-      {showDeleteBtn && (
+      {!props.cannotDelete && (
         <button
-          className="absolute top-0 right-0 rounded-full bg-black"
+          className="absolute top-0 right-0 rounded-full bg-black hover-show-child"
           onClick={props.onDelete}
         >
           <PlusIcon fill="gray" className="rotate-45 w-3 h-3"/>
@@ -77,7 +68,10 @@ interface UserSearcherProps extends React.HtmlHTMLAttributes<HTMLDivElement> {
   inputClassName?: string
   resultContainerClassName?: string
   resultItemClassName?: string
+  fixedUsers?: SimplifiedUser[] | null //users will always be chosen, can not delete
+  defaultUsers?: SimplifiedUser[] | null
   onSelectUserChange?: (users: SimplifiedUser[]) => void
+  disabled?: boolean
 }
 
 enum UserSearcherState {
@@ -87,15 +81,34 @@ enum UserSearcherState {
   Fail,
 }
 
+function mergeUsers(lUserGroup: SimplifiedUser[] | undefined | null, rUserGroup: SimplifiedUser[] | undefined | null) {
+  let finalUsers = lUserGroup ? lUserGroup : []
+  if (rUserGroup) {
+    if (finalUsers.length == 0) {
+      return rUserGroup
+    }
+    let filteredUsers = rUserGroup.filter((currentItem1) => {
+      return  finalUsers.findIndex((currentItem2) => {
+        return currentItem1.uid == currentItem2.uid
+      }) == -1
+    })
+    finalUsers = finalUsers.concat(filteredUsers)
+  }
+  return finalUsers
+}
+
 export function UserSearcher(props: UserSearcherProps) {
   const [searchTimer, setSearchTimer] = useState<NodeJS.Timeout | null>(null)
   const [searchResult, setSearchResult] = useState<SimplifiedUser[]>([])
   const [showOptionList, setShowOptionList, btnRef, optionListRef] = useDropdownHandleOutsideClick()
   const [searchState, setSearchState] = useState(UserSearcherState.Waiting)
 
-  const {className, displayType, inputClassName, resultContainerClassName, resultItemClassName, onSelectUserChange, ...otherProps} = props
+  const {
+    className, displayType, inputClassName, resultContainerClassName, resultItemClassName,
+    fixedUsers, defaultUsers, onSelectUserChange, disabled, ...otherProps
+  } = props
 
-  const [selectedUsers, setSelectedUsers] = useState<SimplifiedUser[]>([])
+  const [selectedUsers, setSelectedUsers] = useState<SimplifiedUser[]>(mergeUsers(fixedUsers, defaultUsers))
 
   const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (searchTimer) {
@@ -144,12 +157,15 @@ export function UserSearcher(props: UserSearcherProps) {
   }
 
   return (
-    <div className="relative">
+    <div className={`relative ${disabled ? "pointer-events-none" : ""}`}>
       <div
         className={`flex flex-wrap ${className}`}
         onKeyDown={(e) => {
           switch (e.key) {
             case "Backspace":
+              if (fixedUsers && selectedUsers.length == fixedUsers.length) {
+                return
+              }
               // @ts-ignore
               if (!btnRef.current.value && selectedUsers.length != 0) {
                 let copy = [...selectedUsers]

@@ -11,3 +11,13 @@ input:-webkit-autofill:focus {
   -webkit-box-shadow: 0 0 0 50px white inset;/*your box-shadow*/
   -webkit-text-fill-color: #333;
 }
+
+.hover-show-parent {}
+
+.hover-show-parent .hover-show-child {
+  visibility: hidden;
+}
+
+.hover-show-parent:hover .hover-show-child {
+  visibility: visible;
+}
