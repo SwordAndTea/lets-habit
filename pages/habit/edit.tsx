@@ -33,7 +33,6 @@ export default function EditHabitPage() {
       getHabit(habitID).then((resp) => {
         if (resp.data && resp.data.data && resp.data.data.habit) {
           let habitInfo = resp.data.data.habit
-          console.log(habitInfo)
           setHabit(habitInfo)
           let userInfo = GetLocalUserInfo()
 

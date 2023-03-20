@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {DefaultUserPortraitIcon, PlusIcon, SpinWaitIndicatorIcon, SquareCheckIcon} from "./icons";
 import {useDropdownHandleOutsideClick} from "./hooks";
 import {userSearch} from "../api/user";
@@ -108,7 +108,11 @@ export function UserSearcher(props: UserSearcherProps) {
     fixedUsers, defaultUsers, onSelectUserChange, disabled, ...otherProps
   } = props
 
-  const [selectedUsers, setSelectedUsers] = useState<SimplifiedUser[]>(mergeUsers(fixedUsers, defaultUsers))
+  const [selectedUsers, setSelectedUsers] = useState<SimplifiedUser[]>([])
+
+  useEffect(()=>{
+    setSelectedUsers(mergeUsers(fixedUsers, defaultUsers))
+  }, [fixedUsers, defaultUsers])
 
   const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (searchTimer) {
@@ -187,7 +191,7 @@ export function UserSearcher(props: UserSearcherProps) {
           return <UserCard key={index} user={value} onDelete={(e) => {
             e.stopPropagation()
             setSelectedUsers(selectedUsers.filter(a => a.uid != value.uid))
-          }}/>
+          }} cannotDelete={fixedUsers?.length ? index < fixedUsers.length : true}/>
         })}
 
         <input
