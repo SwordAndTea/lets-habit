@@ -1,6 +1,6 @@
 import {GenColorPalette} from "../util/color";
 import {DateToDateStr} from "../util/date";
-import React from "react";
+import React, {useRef, useState} from "react";
 
 interface HeatmapData {
   date: Date
@@ -31,8 +31,15 @@ export default function Heatmap(props: HeatmapProps) {
   let verticalSpace = 2
   let horizontalSpace = 2
   let rectSideLength = props.elementSideLength !== undefined ? props.elementSideLength : 10
-  let viewBoxWidth = totalColumnNum * rectSideLength + (totalColumnNum - 1) * horizontalSpace
-  let viewBoxHeight = 7 * rectSideLength + (7 - 1) * verticalSpace
+  let viewBoxWidth = totalColumnNum * rectSideLength + (totalColumnNum + 1) * horizontalSpace
+  let viewBoxHeight = 7 * rectSideLength + (7 + 1) * verticalSpace
+
+  const cardWidth = 80
+  const cardHeight = 20
+  const [showCard, setShowCard] = useState(false)
+  const [cardDate, setCardDate] = useState("")
+  const [cardTop, setCarTop] = useState(0)
+  const [cardLeft, setCarLeft] = useState(0)
 
   // map data into dict get get max value
   let dataMap = new Map()
@@ -69,8 +76,8 @@ export default function Heatmap(props: HeatmapProps) {
 
     // construct rects
     for (let j = startIndex; j < endIndex; j++) {
-      let dataStr = DateToDateStr(currenDate)
-      let value = dataMap.get(dataStr)
+      let dateStr = DateToDateStr(currenDate)
+      let value = dataMap.get(dateStr)
       let rgb = "#D3D3D3" // default gray color
 
       // calculate color if current date has a value
@@ -87,15 +94,18 @@ export default function Heatmap(props: HeatmapProps) {
 
       rows.push(
         <rect
-          key={dataStr}
+          key={dateStr}
           x="0"
-          y={j * rectSideLength + j * verticalSpace}
+          y={verticalSpace + j * rectSideLength + j * verticalSpace}
           width={rectSideLength}
           height={rectSideLength}
           rx="2"
           ry="2"
           fill={rgb}
-          className={"bg-gray"}
+          className={"bg-gray hover:stroke-1 hover:stroke-gray-900"}
+          data-date={dateStr}
+          data-col={i}
+          data-row={j}
         />
       )
       currenDate.setDate(currenDate.getDate() + 1)
@@ -104,19 +114,59 @@ export default function Heatmap(props: HeatmapProps) {
     columns.push(
       <g
         key={`column-${i}`}
-        transform={`translate(${i * (rectSideLength + horizontalSpace)}, 0)`}
+        transform={`translate(${horizontalSpace + i * (rectSideLength + horizontalSpace)}, 0)`}
       >
         {rows}
       </g>)
   }
 
-  return <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox={`0 0 ${viewBoxWidth} ${viewBoxHeight}`}
-    {...svgProps}
-  >
-    {columns}
-  </svg>
+  const cardSpace = rectSideLength + horizontalSpace
+
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox={`0 0 ${viewBoxWidth} ${viewBoxHeight}`}
+      onMouseOver={(e) => {
+        // @ts-ignore
+        if (e.target.nodeName == "svg") {
+          setShowCard(false)
+        }
+        // @ts-ignore
+        if (e.target.nodeName == "rect") {
+          let target = e.target as SVGRectElement
+          setShowCard(true)
+          setCardDate(target.getAttribute("data-date") as string)
+          let col = parseInt(target.getAttribute("data-col") as string, 10)
+          let row = parseInt(target.getAttribute("data-row") as string, 10)
+          let left = horizontalSpace + col * (rectSideLength + horizontalSpace) + cardSpace
+          let right = left + cardWidth
+          if (right > viewBoxWidth - horizontalSpace) {
+            left = left - cardWidth - cardSpace - horizontalSpace
+          }
+          setCarLeft(left)
+          let top = verticalSpace + row * rectSideLength + row * verticalSpace - (cardHeight/2-rectSideLength/2)
+          let bottom = top + cardHeight
+          if (top < verticalSpace) {
+            top = verticalSpace
+          } else if (bottom > viewBoxHeight - verticalSpace) {
+            top = top - (bottom - viewBoxHeight + verticalSpace)
+          }
+          setCarTop(top)
+        }
+      }}
+      {...svgProps}
+      onMouseLeave={()=>{
+        setShowCard(false)
+      }}
+    >
+      {columns}
+      {showCard && (
+        <foreignObject className="bg-gray-700 rounded" x={cardLeft} y={cardTop} width={cardWidth} height={cardHeight}>
+          <span className={"block w-full h-full flex justify-center items-center text-xs text-white"}>{cardDate}</span>
+        </foreignObject>
+      )}
+    </svg>
+  )
 }
 
 
