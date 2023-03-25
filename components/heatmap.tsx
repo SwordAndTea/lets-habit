@@ -1,6 +1,6 @@
 import {GenColorPalette} from "../util/color";
 import {DateToDateStr} from "../util/date";
-import React, {useRef, useState} from "react";
+import React, {useState} from "react";
 
 interface HeatmapData {
   date: Date
@@ -24,9 +24,9 @@ export default function Heatmap(props: HeatmapProps) {
   let {startDate, endDate, data, color, fillAll, singleColor, ...svgProps} = props
   let startDay = startDate.getDay()
   let endDay = endDate.getDay()
-  let numberOfDays = (endDate.getTime() - startDate.getTime()) / (24 * 3600 * 1000)
-  let middleColumnNum = (numberOfDays - (7 - startDay) - endDay) / 7
-  let totalColumnNum = middleColumnNum + (startDay > 0 ? 1 : 0) + 1
+  let numberOfDays = (endDate.getTime() - startDate.getTime()) / (24 * 3600 * 1000) + 1
+  let middleColumnNum = (numberOfDays - (7 - startDay) - (endDay+1)) / 7
+  let totalColumnNum = middleColumnNum + 2
 
   let verticalSpace = 2
   let horizontalSpace = 2
@@ -128,10 +128,6 @@ export default function Heatmap(props: HeatmapProps) {
       viewBox={`0 0 ${viewBoxWidth} ${viewBoxHeight}`}
       onMouseOver={(e) => {
         // @ts-ignore
-        if (e.target.nodeName == "svg") {
-          setShowCard(false)
-        }
-        // @ts-ignore
         if (e.target.nodeName == "rect") {
           let target = e.target as SVGRectElement
           setShowCard(true)
@@ -152,6 +148,8 @@ export default function Heatmap(props: HeatmapProps) {
             top = top - (bottom - viewBoxHeight + verticalSpace)
           }
           setCarTop(top)
+        } else {
+          setShowCard(false)
         }
       }}
       {...svgProps}

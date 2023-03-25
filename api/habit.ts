@@ -12,8 +12,23 @@ interface CreateHabitReq {
   custom_config: UserHabitCustomConfig
 }
 
+export interface UpdateHabitReq {
+  name: string | null
+  identity: string | null
+  cooperators_to_add: string[] | null
+  cooperators_to_delete: string[] | null
+}
+
+export interface UpdateHabitCustomConfigReq {
+  heatmap_color: string | null
+}
+
 export const createHabit = async (req: CreateHabitReq) => {
   return reqHandler.post(`${apiV1}/habit`, req)
+}
+
+export const updateHabit = async (habitID: number, basicInfo: UpdateHabitReq, customInfo: UpdateHabitCustomConfigReq) => {
+  return reqHandler.put(`${apiV1}/habit/${habitID}`, {basic_info: basicInfo, custom_info: customInfo})
 }
 
 export const getHabit = async (habitID: number) => {

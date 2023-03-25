@@ -188,10 +188,20 @@ export function UserSearcher(props: UserSearcherProps) {
         {...otherProps}
       >
         {selectedUsers.map((value, index) => {
-          return <UserCard key={index} user={value} onDelete={(e) => {
-            e.stopPropagation()
-            setSelectedUsers(selectedUsers.filter(a => a.uid != value.uid))
-          }} cannotDelete={fixedUsers?.length ? index < fixedUsers.length : true}/>
+          return (
+            <UserCard
+              key={index}
+              user={value}
+              onDelete={(e) => {
+                let newUserList = selectedUsers.filter(a => a.uid != value.uid)
+                setSelectedUsers(newUserList)
+                if (onSelectUserChange) {
+                  onSelectUserChange(newUserList)
+                }
+              }}
+              cannotDelete={fixedUsers?.length ? index < fixedUsers.length : true}
+            />
+          )
         })}
 
         <input
@@ -208,33 +218,6 @@ export function UserSearcher(props: UserSearcherProps) {
           onChange={onInputChange}
         />
       </div>
-      {/*{showOptionList && (*/}
-      {/*  <div*/}
-      {/*    className={`absolute z-50 top-full left-0 right-0 w-full rounded-lg flex flex-col overflow-y-scroll min-h-[200px] bg-gray-200 ${resultContainerClassName}`}*/}
-      {/*    ref={optionListRef}*/}
-      {/*  >*/}
-      {/*    {searchState == UserSearcherState.Searching &&*/}
-      {/*      <SpinWaitIndicatorIcon className="m-auto fill-transparent w-10 h-10"/>}*/}
-      {/*    {searchState == UserSearcherState.Success && searchResult.length > 0 && (*/}
-      {/*      <ul onClick={handleUserChoose}>*/}
-      {/*        {searchResult.map((value, index) => {*/}
-      {/*          return (*/}
-      {/*            <li*/}
-      {/*              key={index}*/}
-      {/*              value={index}*/}
-      {/*              className={`h-12 hover:bg-gray-300 ${resultItemClassName}`}*/}
-      {/*            >*/}
-      {/*              <UserItem user={value} selected={selectedUsers.findIndex(a => a.uid == value.uid) != -1}/>*/}
-      {/*            </li>*/}
-      {/*          )*/}
-      {/*        })}*/}
-      {/*      </ul>*/}
-      {/*    )}*/}
-      {/*    {searchState == UserSearcherState.Success && searchResult.length == 0 && (*/}
-      {/*      <span className="m-auto">no results</span>)}*/}
-      {/*    {searchState == UserSearcherState.Fail && <span className="m-auto">search fail</span>}*/}
-      {/*  </div>*/}
-      {/*)}*/}
       <div
         className={`${displayType == PopViewDisplayTypeFloat ? "absolute z-50 top-full left-0 right-0" : "w-full"}
           rounded-lg bg-gray-200

@@ -7,14 +7,6 @@
   @apply w-full space-y-6;
 }
 
-.editNewWaitIndicatorMask {
-  @apply absolute z-50 top-0 right-0 bottom-0 left-0 flex bg-gray-400/25;
-}
-
-.editNewWaitIndicator {
-  @apply m-auto w-10 h-10;
-}
-
 .editNewBlurRing {
   @apply ring-inset ring-2 ring-gray-200;
 }
@@ -52,7 +44,23 @@
 }
 
 .editNewConfirmBtn {
-  @apply ml-4 bg-black text-white w-24 h-10 rounded-lg;
+  @apply ml-4 bg-black text-white w-24 h-10 rounded-lg flex;
+}
+
+.editNewConfirmSpan {
+  @apply m-auto;
+}
+
+.editNewConfirmInProgressSpan {
+  @apply my-auto ml-1;
+}
+
+.editNewConfirmInProgressBtn {
+  @apply ml-4 bg-gray-500 text-white w-24 h-10 rounded-lg flex;
+}
+
+.editNewConfirmWaitIndicator {
+  @apply my-auto h-3/5 aspect-square ml-1;
 }
 
 .editNewSelect {

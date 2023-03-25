@@ -28,7 +28,7 @@ export default function NewHabitPage() {
   let heatmapEndDate = new Date()
   let heatmapStartDate = CalculatedStartDay()
 
-  useEffect(()=>{
+  useEffect(() => {
     let userInfo = GetLocalUserInfo()
     if (userInfo) {
       setCurUser(userInfo)
@@ -58,12 +58,6 @@ export default function NewHabitPage() {
 
   return (
     <div className={styles.editNewOutsideContainer}>
-      {/*creating waiting mask and indicator*/}
-      {isCreating && (
-        <div className={styles.editNewWaitIndicatorMask}>
-          <SpinWaitIndicatorIcon className={styles.editNewWaitIndicator}/>
-        </div>
-      )}
       {/*form*/}
       <div className={styles.editNewForm}>
         <HabitInfoItemWrap name="Habit Name">
@@ -130,7 +124,8 @@ export default function NewHabitPage() {
           className={styles.editNewConfirmBtn}
           onClick={handleCreate}
         >
-          Create
+          {isCreating && <SpinWaitIndicatorIcon className={styles.editNewConfirmWaitIndicator}/>}
+          <span className={isCreating ? styles.editNewConfirmInProgressSpan : styles.editNewConfirmSpan}>Create</span>
         </button>
       </div>
     </div>

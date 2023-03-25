@@ -28,7 +28,7 @@ function HabitCard(props: HabitCardProps) {
 
   return (
     <div
-      className="w-full p-8 border-1 rounded-xl bg-white shadow-[0px_0px_15px_rgba(0,0,0,0.3)]"
+      className="w-full py-8 px-16 border-1 rounded-xl bg-white shadow-[0px_0px_15px_rgba(0,0,0,0.3)]"
     >
       <div className="my-1 flex"> {/*container for habit title options button*/}
         <h1 className="text-4xl">{props.habit.habit.name}</h1>
@@ -85,9 +85,6 @@ function HabitCard(props: HabitCardProps) {
       />
 
       <div className="flex flex-col space-y-1">
-        <span className="block text-lg">
-          log deadline: next day 4:00
-        </span>
         <span className="block text-lg">
           {`remain retroactive chance: ${props.habit.user_custom_config.remain_retroactive_chance}`}
         </span>
@@ -159,14 +156,24 @@ export default function Home() {
   }
 
   const doHabitLog = (habitID: number) => {
-    logHabit(habitID, DateToRFC3339FormatString(new Date())).then(()=>{
-      let newHabits = habits.map((value, index, array)=>{
-        if (value.habit.id == habitID) {
-          value.today_logged = true
-        }
-        return value
-      })
-      setHabits(newHabits)
+    logHabit(habitID, DateToRFC3339FormatString(new Date())).then((resp)=>{
+      if (resp.data && resp.data.data) {
+        let newHabits = habits.map((value)=>{
+          if (value.habit.id == habitID) {
+            value.today_logged = true
+            debugger
+            if (resp.data.data.log_record) {
+              if (value.log_records == undefined) {
+                value.log_records = [resp.data.data.log_record]
+              } else {
+                value.log_records.push(resp.data.data.log_record)
+              }
+            }
+          }
+          return value
+        })
+        setHabits(newHabits)
+      }
     })
   }
 
