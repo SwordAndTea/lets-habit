@@ -178,7 +178,7 @@ export default function Home() {
   }
 
   return (
-    <div className="w-full py-4 px-44 space-y-8">
+    <div className="w-full py-4 px-52 space-y-8">
       <div className="flex">
         <button
           className="h-10 p-2 ml-auto rounded-md bg-black text-amber-50 shadow-[0px_3px_gray] active:translate-y-[3px] active:shadow-none"

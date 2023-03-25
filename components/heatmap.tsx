@@ -1,5 +1,5 @@
 import {GenColorPalette} from "../util/color";
-import {DateToDateStr} from "../util/date";
+import {DateToDateStr, GetMonthAbbreviation} from "../util/date";
 import React, {useState} from "react";
 
 interface HeatmapData {
@@ -25,14 +25,18 @@ export default function Heatmap(props: HeatmapProps) {
   let startDay = startDate.getDay()
   let endDay = endDate.getDay()
   let numberOfDays = (endDate.getTime() - startDate.getTime()) / (24 * 3600 * 1000) + 1
-  let middleColumnNum = (numberOfDays - (7 - startDay) - (endDay+1)) / 7
+  let middleColumnNum = (numberOfDays - (7 - startDay) - (endDay + 1)) / 7
   let totalColumnNum = middleColumnNum + 2
 
   let verticalSpace = 2
   let horizontalSpace = 2
   let rectSideLength = props.elementSideLength !== undefined ? props.elementSideLength : 10
-  let viewBoxWidth = totalColumnNum * rectSideLength + (totalColumnNum + 1) * horizontalSpace
-  let viewBoxHeight = 7 * rectSideLength + (7 + 1) * verticalSpace
+  const textWidth = 25
+  const textHeight = rectSideLength
+  const firstRectLineX = textWidth + horizontalSpace * 2
+  const firstRectLineY = textHeight + verticalSpace * 2
+  let viewBoxWidth = firstRectLineX + totalColumnNum * rectSideLength + (totalColumnNum+1) * horizontalSpace
+  let viewBoxHeight = firstRectLineY + 7 * rectSideLength + 7 * verticalSpace
 
   const cardWidth = 80
   const cardHeight = 20
@@ -61,10 +65,49 @@ export default function Heatmap(props: HeatmapProps) {
     })
   }
 
-  let columns = []
+  let columns = [
+    <g key="weekday" textAnchor="end" fontSize="9" className="fill-slate-600">
+      <text
+        x={textWidth}
+        y={textHeight + firstRectLineY + (verticalSpace + rectSideLength)}
+        dy={-2}
+        width={textWidth}
+        height={textHeight}
+      >
+        Mon
+      </text>
+      <text
+        x={textWidth}
+        y={textHeight + firstRectLineY + 3 * (verticalSpace + rectSideLength)}
+        dy={-2}
+        width={textWidth}
+        height={textHeight}
+      >
+        Wed
+      </text>
+      <text
+        x={textWidth}
+        y={textHeight + firstRectLineY + 5 * (verticalSpace + rectSideLength)}
+        dy={-2}
+        width={textWidth}
+        height={textHeight}
+      >
+        Fri
+      </text>
+    </g>
+  ]
   let currenDate = new Date(startDate.getTime())
   for (let i = 0; i < totalColumnNum; i++) {
     let rows = []
+    // add month tag
+    if (currenDate.getDate() <= 7) {
+      rows.push(
+        <text x={0} y={textHeight} fontSize="9" className="fill-slate-600">
+          {GetMonthAbbreviation(currenDate.getMonth() + 1)}
+        </text>
+      )
+    }
+
     let startIndex = 0
     let endIndex = 7
 
@@ -95,14 +138,14 @@ export default function Heatmap(props: HeatmapProps) {
       rows.push(
         <rect
           key={dateStr}
-          x="0"
-          y={verticalSpace + j * rectSideLength + j * verticalSpace}
+          x={0}
+          y={firstRectLineY + j * rectSideLength + j * verticalSpace}
           width={rectSideLength}
           height={rectSideLength}
           rx="2"
           ry="2"
           fill={rgb}
-          className={"bg-gray hover:stroke-1 hover:stroke-gray-900"}
+          className={"bg-gray hover:stroke-1 hover:stroke-slate-600"}
           data-date={dateStr}
           data-col={i}
           data-row={j}
@@ -114,7 +157,7 @@ export default function Heatmap(props: HeatmapProps) {
     columns.push(
       <g
         key={`column-${i}`}
-        transform={`translate(${horizontalSpace + i * (rectSideLength + horizontalSpace)}, 0)`}
+        transform={`translate(${firstRectLineX + horizontalSpace + i * (rectSideLength + horizontalSpace)}, 0)`}
       >
         {rows}
       </g>)
@@ -134,16 +177,16 @@ export default function Heatmap(props: HeatmapProps) {
           setCardDate(target.getAttribute("data-date") as string)
           let col = parseInt(target.getAttribute("data-col") as string, 10)
           let row = parseInt(target.getAttribute("data-row") as string, 10)
-          let left = horizontalSpace + col * (rectSideLength + horizontalSpace) + cardSpace
+          let left = firstRectLineX + horizontalSpace + col * (rectSideLength + horizontalSpace) + cardSpace
           let right = left + cardWidth
           if (right > viewBoxWidth - horizontalSpace) {
             left = left - cardWidth - cardSpace - horizontalSpace
           }
           setCarLeft(left)
-          let top = verticalSpace + row * rectSideLength + row * verticalSpace - (cardHeight/2-rectSideLength/2)
+          let top = firstRectLineY + row * rectSideLength + row * verticalSpace - (cardHeight / 2 - rectSideLength / 2)
           let bottom = top + cardHeight
-          if (top < verticalSpace) {
-            top = verticalSpace
+          if (top < firstRectLineY) {
+            top = firstRectLineY
           } else if (bottom > viewBoxHeight - verticalSpace) {
             top = top - (bottom - viewBoxHeight + verticalSpace)
           }
@@ -153,7 +196,7 @@ export default function Heatmap(props: HeatmapProps) {
         }
       }}
       {...svgProps}
-      onMouseLeave={()=>{
+      onMouseLeave={() => {
         setShowCard(false)
       }}
     >
