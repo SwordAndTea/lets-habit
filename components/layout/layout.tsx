@@ -11,15 +11,15 @@ export const LayoutHeaderFooter = ({children}) => {
   // @ts-ignore
   const notifications = useSelector((state) => state.notifications)
 
-  const [isSSR, setIsSSR] = useState(true);
+  const [loadNotificationSystem, setLoadNotificationSystem] = useState(true);
 
   useEffect(() => {
-    setIsSSR(false);
+    setLoadNotificationSystem(false);
   }, []);
 
   return (
     <div className="flex flex-col min-h-screen">
-      {!isSSR && <NotificationsSystem
+      {!loadNotificationSystem && <NotificationsSystem
         // 2. Pass the notifications you want Reapop to display.
           notifications={notifications}
         // 3. Pass the function used to dismiss a notification.
@@ -43,15 +43,15 @@ export const LayoutFooterOnly = ({children}) => {
   // @ts-ignore
   const notifications = useSelector((state) => state.notifications)
 
-  const [isSSR, setIsSSR] = useState(true);
+  const [loadNotificationSystem, setLoadNotificationSystem] = useState(true);
 
   useEffect(() => {
-    setIsSSR(false);
+    setLoadNotificationSystem(false);
   }, []);
 
   return (
     <div className="flex flex-col min-h-screen">
-      {!isSSR && <NotificationsSystem
+      {!loadNotificationSystem && <NotificationsSystem
         // 2. Pass the notifications you want Reapop to display.
           notifications={notifications}
         // 3. Pass the function used to dismiss a notification.

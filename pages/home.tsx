@@ -26,12 +26,23 @@ interface HabitCardProps {
 function HabitCard(props: HabitCardProps) {
   const [showOptionList, setShowOptionList, btnRef, optionListRef] = useDropdownHandleOutsideClick()
 
+  // @ts-ignore
+  const LogInfoCard = ({name, value}) => {
+    return (
+      <div className="hover:-translate-y-1 transition-transform duration-200">
+        <p className="text-center w-32 h-6 font-bold text-pink-600">{value}</p>
+        <div className="h-[1px] border-b border-gray-400 w-32"></div>
+        <p className="text-center w-32 h-12 text-xs font-bold text-gray-400">{name}</p>
+      </div>
+    )
+  }
+
   return (
     <div
       className="w-full py-8 px-16 border-1 rounded-xl bg-white shadow-[0px_0px_15px_rgba(0,0,0,0.3)]"
     >
       <div className="my-1 flex"> {/*container for habit title options button*/}
-        <h1 className="text-4xl">{props.habit.habit.name}</h1>
+        <h1 className="text-4xl text-gray-600">{props.habit.habit.name}</h1>
         {/*options button*/}
         <div className="ml-auto relative flex">
           <button
@@ -84,16 +95,20 @@ function HabitCard(props: HabitCardProps) {
         singleColor
       />
 
-      <div className="flex flex-col space-y-1">
-        <span className="block text-lg">
-          {`remain retroactive chance: ${props.habit.user_custom_config.remain_retroactive_chance}`}
-        </span>
+      <div className="flex w-full">
+        <div className="flex space-x-2">
+          <LogInfoCard name="current streak" value={props.habit.user_custom_config.current_streak}/>
+          <LogInfoCard name="longest streak" value={props.habit.user_custom_config.longest_streak}/>
+          <LogInfoCard name="remain  retroactive chance"
+                       value={props.habit.user_custom_config.remain_retroactive_chance}/>
+
+        </div>
         {props.habit.today_logged ? (
-          <button className="w-36 h-8 ml-auto text-white rounded-lg bg-gray-400 text-center" disabled>
+          <button className="w-36 h-8 ml-auto my-auto text-white rounded-lg bg-gray-400 text-center" disabled>
             Already Logged
           </button>
         ) : (
-          <button className="w-24 h-8 ml-auto text-white rounded-lg bg-pink-600" onClick={() => {
+          <button className="w-24 h-8 ml-auto my-auto text-white rounded-lg bg-pink-600" onClick={() => {
             props.onHabitLog(props.habit.habit.id)
           }}>
             Log
@@ -156,9 +171,9 @@ export default function Home() {
   }
 
   const doHabitLog = (habitID: number) => {
-    logHabit(habitID, DateToRFC3339FormatString(new Date())).then((resp)=>{
+    logHabit(habitID, DateToRFC3339FormatString(new Date())).then((resp) => {
       if (resp.data && resp.data.data) {
-        let newHabits = habits.map((value)=>{
+        let newHabits = habits.map((value) => {
           if (value.habit.id == habitID) {
             value.today_logged = true
             debugger

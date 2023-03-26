@@ -21,10 +21,10 @@ function Header() {
 
 
   return (
-    <header className="flex bg-black border-b pb-1 pt-1 shadow-lg">
+    <header className="flex bg-black pb-1 pt-1 shadow-lg">
       {/*logo*/}
       <button
-        className="text-white mr-auto ml-4"
+        className="text-white mr-auto ml-6"
         onClick={() => {
           route.replace(RoutePath.HomePage)
         }}
@@ -32,7 +32,8 @@ function Header() {
         Lets-Habit
       </button>
 
-      <div className="w-10 h-10 ml-auto mr-4 my-2 relative">
+      {/*user portrait*/}
+      <div className="w-10 h-10 ml-auto mr-6 my-2 relative">
         <button
           className="w-10 h-10 rounded-full border-2 border-white overflow-hidden"
           ref={btnRef}

@@ -57,7 +57,7 @@ export default function Login() {
   }
 
   return (
-    <div className="m-auto p-16 sm:p-8 w-full max-w-lg rounded-lg shadow-2xl">
+    <div className="mx-auto my-12 p-16 sm:p-8 w-full max-w-lg rounded-lg shadow-2xl bg-white">
       {/*title*/}
       <h1 className="text-center text-2xl font-bold sm:text-3xl">
         Lets Habit
