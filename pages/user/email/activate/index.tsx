@@ -1,7 +1,6 @@
 import {
   EmailActivateActivateCodeParam,
   UserLocalStorageKey,
-  UserTokenHeader
 } from "../../../../util/const";
 import {useEffect, useState} from "react";
 import {userEmailActivate} from "../../../../api/user";
@@ -38,16 +37,9 @@ export default function EmailActivatePage() {
   const doEmailActivate = (activeCode: string) => {
     setAccountActivateState(AccountActivateState.Begin)
     userEmailActivate(activeCode).then((resp) => {
-      if (resp.data && resp.data.data && resp.data.data.user &&
-        resp.headers && resp.headers[UserTokenHeader]) {
-        localStorage.setItem(UserLocalStorageKey, JSON.stringify(resp.data.data.user))
-        localStorage.setItem(UserTokenHeader, resp.headers[UserTokenHeader])
-        setAccountActivateState(AccountActivateState.Success)
-      } else {
-        setAccountActivateState(AccountActivateState.Fail)
-        setActivateFailReason("unable to parse activate return data")
-      }
-    }).catch(({err, msg, isAuthFail}) => {
+      localStorage.setItem(UserLocalStorageKey, JSON.stringify(resp.data.data.user))
+      setAccountActivateState(AccountActivateState.Success)
+    }).catch(({msg}) => {
       setAccountActivateState(AccountActivateState.Fail)
       setActivateFailReason(msg)
     })

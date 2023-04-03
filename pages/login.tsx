@@ -1,11 +1,12 @@
 import {userLoginByEmail, userPing, userRegisterByEmail} from "../api/user";
-import React, {useEffect, useState} from "react";
+import React, {useState} from "react";
 import {LayoutFooterOnly} from "../components/layout/layout";
-import {useRouter} from "next/router";
+import {NextRouter, useRouter} from "next/router";
 import {noti} from "../util/noti";
 import {SpinWaitIndicatorIcon, WeChatIcon} from "../components/icons";
-import {RoutePath, UserTokenHeader} from "../util/const";
-import {HandleUserResp} from "../util/user";
+import {RoutePath} from "../util/const";
+import {AxiosResponse} from "axios";
+
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -15,13 +16,14 @@ export default function Login() {
 
   const route = useRouter()
 
-  useEffect(() => {
-    if (route.isReady && localStorage.getItem(UserTokenHeader)) {
-      userPing().then(() => {
-        route.push(RoutePath.HomePage)
-      })
+  const handleUserResp = (resp: AxiosResponse, route: NextRouter) => {
+    localStorage.setItem("user", JSON.stringify(resp.data.data.user))
+    if (resp.data.data.user.user_register_type == "email" && !resp.data.data.user.email_active) {
+      route.push(RoutePath.EmailActivateSendPage)
+    } else {
+      route.push(RoutePath.HomePage)
     }
-  }, [route, route.isReady])
+  }
 
   const handleEmailSignUpLogin = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault()
@@ -37,9 +39,7 @@ export default function Login() {
       // do sign up
       setDisableSignInSignUp(true)
       userRegisterByEmail(email, password).then((resp) => {
-        if (!HandleUserResp(resp, route)) {
-          noti.error("can not parse sign up return data")
-        }
+        handleUserResp(resp, route)
       }).finally(() => {
         setDisableSignInSignUp(false)
       })
@@ -47,9 +47,7 @@ export default function Login() {
       // do sign in
       setDisableSignInSignUp(true)
       userLoginByEmail(email, password).then((resp) => {
-        if (!HandleUserResp(resp, route)) {
-          noti.error("unable to parse login return data")
-        }
+        handleUserResp(resp, route)
       }).finally(() => {
         setDisableSignInSignUp(false)
       })
@@ -192,4 +190,18 @@ export default function Login() {
 // @ts-ignore
 Login.getLayout = (page) => {
   return <LayoutFooterOnly>{page}</LayoutFooterOnly>
+}
+
+export async function getServerSideProps(context: object) {
+  // @ts-ignore
+  return await userPing(context.req.headers.cookie).then(() => {
+    return {
+      redirect: {
+        destination: RoutePath.HomePage,
+        permanent: false,
+      }
+    }
+  }).catch(()=>{
+    return {props: {}}
+  })
 }

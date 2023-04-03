@@ -68,6 +68,7 @@ export default function Heatmap(props: HeatmapProps) {
   let columns = [
     <g key="weekday" textAnchor="end" fontSize="9" className="fill-slate-600">
       <text
+        key="monday"
         x={textWidth}
         y={textHeight + firstRectLineY + (verticalSpace + rectSideLength)}
         dy={-2}
@@ -77,6 +78,7 @@ export default function Heatmap(props: HeatmapProps) {
         Mon
       </text>
       <text
+        key="wednesday"
         x={textWidth}
         y={textHeight + firstRectLineY + 3 * (verticalSpace + rectSideLength)}
         dy={-2}
@@ -86,6 +88,7 @@ export default function Heatmap(props: HeatmapProps) {
         Wed
       </text>
       <text
+        key="friday"
         x={textWidth}
         y={textHeight + firstRectLineY + 5 * (verticalSpace + rectSideLength)}
         dy={-2}
@@ -101,9 +104,10 @@ export default function Heatmap(props: HeatmapProps) {
     let rows = []
     // add month tag
     if (currenDate.getDate() <= 7) {
+      let month = GetMonthAbbreviation(currenDate.getMonth() + 1)
       rows.push(
-        <text x={0} y={textHeight} fontSize="9" className="fill-slate-600">
-          {GetMonthAbbreviation(currenDate.getMonth() + 1)}
+        <text key={month} x={0} y={textHeight} fontSize="9" className="fill-slate-600">
+          {month}
         </text>
       )
     }

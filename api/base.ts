@@ -1,18 +1,11 @@
 import axios from "axios";
 import {noti} from "../util/noti";
-import {UserTokenHeader} from "../util/const";
 
 export const apiV1 = "api/v1"
 
 export const reqHandler = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_BACKEND_HOST
-})
-
-reqHandler.interceptors.request.use((conf) => {
-  if (localStorage.getItem(UserTokenHeader) && conf.headers) {
-    conf.headers[UserTokenHeader] = localStorage.getItem(UserTokenHeader)
-  }
-  return conf
+  baseURL: process.env.NEXT_PUBLIC_BACKEND_HOST,
+  withCredentials: true
 })
 
 reqHandler.interceptors.response.use((resp) => {

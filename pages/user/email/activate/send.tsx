@@ -2,7 +2,7 @@ import {useEffect, useState} from "react";
 import {useRouter} from "next/router";
 import {userEmailActivateResend} from "../../../../api/user";
 import {EmailIcon} from "../../../../components/icons";
-import {RoutePath, UserTokenHeader} from "../../../../util/const";
+import {RoutePath} from "../../../../util/const";
 import {GetLocalUserInfo} from "../../../../util/user";
 
 
@@ -15,10 +15,6 @@ export default function EmailActivateSendPage() {
 
   useEffect(()=>{
     if (route.isReady) {
-      if (!localStorage.getItem(UserTokenHeader)) {
-        route.push(RoutePath.LoginPage)
-      }
-
       let user = GetLocalUserInfo()
       if (user) {
         if (user.user_register_type != "email" || user.email_active) {

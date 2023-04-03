@@ -1,12 +1,11 @@
 import React, {useEffect, useState} from "react";
 import {useRouter} from "next/router";
 import {EditIcon, DeleteIcon, OptionsIcon} from "../components/icons";
-import {HabitIDURLParam, HabitToEdit, RoutePath, UserTokenHeader} from "../util/const";
+import {HabitIDURLParam, HabitToEdit, RoutePath} from "../util/const";
 import {useDropdownHandleOutsideClick} from "../components/hooks";
 import {getUserInfo} from "../api/user";
-import {HandleUserResp} from "../util/user";
+import {User} from "../util/user";
 import {listHabit, logHabit} from "../api/habit";
-import {noti} from "../util/noti";
 import {DetailedHabit} from "../util/habit";
 import {Pagination} from "../components/pagination";
 import Heatmap from "../components/heatmap";
@@ -120,7 +119,11 @@ function HabitCard(props: HabitCardProps) {
 }
 
 
-export default function Home() {
+interface HomePageProps {
+  user: User
+}
+
+export default function Home(props: HomePageProps) {
   const route = useRouter()
   const pageSize = 5
   const endDate = new Date()
@@ -131,25 +134,14 @@ export default function Home() {
   const [totalHabitNum, setTotalHabitNum] = useState(0)
 
   useEffect(() => {
-    if (localStorage.getItem(UserTokenHeader) == null) {
-      route.replace(RoutePath.LoginPage)
-    }
-    getUserInfo().then((resp) => {
-      HandleUserResp(resp, route)
+    if (route.isReady) {
+      localStorage.setItem("user", JSON.stringify(props.user))
       listHabit(1, pageSize, DateToRFC3339FormatString(startDate), DateToRFC3339FormatString(endDate)).then((resp) => {
-        if (resp.data && resp.data.data && resp.data.data.habits && resp.data.data.total) {
-          setHabits(resp.data.data.habits)
-          setTotalHabitNum(resp.data.data.total)
-        } else {
-          noti.error("cannot parse list habits response")
-        }
+        setHabits(resp.data.data.habits)
+        setTotalHabitNum(resp.data.data.total)
       })
-    }).catch(({isAuthFail}) => {
-      if (isAuthFail) {
-        route.replace(RoutePath.LoginPage)
-      }
-    })
-  }, [])
+    }
+  }, [route.isReady])
 
   const toNewHabitPage = () => {
     route.push(RoutePath.NewHabitPage)
@@ -159,7 +151,6 @@ export default function Home() {
     let query = {}
     // @ts-ignore
     query[HabitIDURLParam] = habit.habit.id
-    sessionStorage.setItem(HabitToEdit, JSON.stringify(habit))
     route.push({
       pathname: RoutePath.EditHabitPage,
       query: query
@@ -243,4 +234,30 @@ export default function Home() {
       </div>
     </div>
   )
+}
+
+export async function getServerSideProps(context: object) {
+  // @ts-ignore
+  return await getUserInfo(context.req.headers.cookie).then((resp) => {
+    if (resp.data.data.user.user_register_type == "email" && !resp.data.data.user.email_active) {
+      return {
+        redirect: {
+          destination: RoutePath.EmailActivateSendPage,
+          permanent: false,
+        }
+      }
+    }
+    return {
+      props: {
+        user: resp.data.data.user
+      }
+    }
+  }).catch(() => {
+    return {
+      redirect: {
+        destination: RoutePath.LoginPage,
+        permanent: false,
+      }
+    }
+  })
 }

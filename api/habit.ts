@@ -31,18 +31,21 @@ export const updateHabit = async (habitID: number, basicInfo: UpdateHabitReq, cu
   return reqHandler.put(`${apiV1}/habit/${habitID}`, {basic_info: basicInfo, custom_info: customInfo})
 }
 
-export const getHabit = async (habitID: number) => {
-  return reqHandler.get(`${apiV1}/habit/${habitID}`)
+export const getHabit = async (habitID: number, extraCookie = undefined) => {
+  return reqHandler.get(`${apiV1}/habit/${habitID}`, {
+    headers: extraCookie ? {Cookie: extraCookie} : undefined
+  })
 }
 
-export const listHabit = async (page: number, pageSize: number, fromTime: string, toTime: string) => {
+export const listHabit = async (page: number, pageSize: number, fromTime: string, toTime: string, extraCookie = undefined) => {
   return reqHandler.get(`${apiV1}/habit/list`, {
     params: {
       page: page,
       page_size: pageSize,
       from_time: fromTime,
       to_time: toTime,
-    }
+    },
+    headers: extraCookie ? {Cookie: extraCookie} : undefined
   })
 }
 

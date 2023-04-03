@@ -1,4 +1,4 @@
-import {RoutePath, UserLocalStorageKey, UserTokenHeader} from "./const";
+import {RoutePath, UserLocalStorageKey} from "./const";
 import {AxiosResponse} from "axios";
 import {NextRouter} from "next/router";
 
@@ -32,18 +32,4 @@ export function GetLocalUserInfo(): User | null {
     return JSON.parse(userInfo)
   }
   return null
-}
-
-export const HandleUserResp = (resp: AxiosResponse, route: NextRouter) => {
-  if (resp.data && resp.data.data && resp.data.data.user && resp.headers && resp.headers[UserTokenHeader]) {
-    localStorage.setItem("user", JSON.stringify(resp.data.data.user))
-    localStorage.setItem(UserTokenHeader, resp.headers[UserTokenHeader])
-    if (resp.data.data.user.user_register_type == "email" && !resp.data.data.user.email_active) {
-      route.push(RoutePath.EmailActivateSendPage)
-    } else {
-      route.push(RoutePath.HomePage)
-    }
-    return true
-  }
-  return false
 }
