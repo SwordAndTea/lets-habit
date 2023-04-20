@@ -54,3 +54,7 @@ export const logHabit = async (habitID: number, logTime: string) => {
     log_time: logTime
   })
 }
+
+export const deleteHabit = async (habitID: number) => {
+  return reqHandler.delete(`${apiV1}/habit/${habitID}`)
+}

@@ -149,6 +149,23 @@ export function DefaultUserPortraitIcon(props: React.SVGAttributes<SVGElement>) 
   )
 }
 
+export function CheckIcon(props: React.SVGAttributes<SVGElement>) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 448 512"
+      {...props}
+    >
+      {/* Font Awesome Pro 6.4.0 by @fontawesome
+      - https://fontawesome.com License
+      - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc.
+      */}
+      <path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3
+      0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/>
+    </svg>
+  )
+}
+
 export function SquareCheckIcon(props: React.SVGAttributes<SVGElement>) {
   return (
     <svg
@@ -185,6 +202,24 @@ export function CircleCheckIcon(props: React.SVGAttributes<SVGElement>) {
       371.8 211.8L243.8 339.8zM512 256C512 397.4 397.4 512 256 512C114.6 512 0 397.4 0 256C0 114.6 114.6 0 256 0C397.4
       0 512 114.6 512 256zM256 48C141.1 48 48 141.1 48 256C48 370.9 141.1 464 256 464C370.9 464 464 370.9 464 256C464
       141.1 370.9 48 256 48z"/>
+    </svg>
+  )
+}
+
+export function XMarkIcon(props: React.SVGAttributes<SVGElement>) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 384 512"
+      {...props}
+    >
+      {/* Font Awesome Pro 6.4.0 by @fontawesome
+      - https://fontawesome.com License
+      - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc.
+      */}
+      <path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3
+      0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5
+      12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/>
     </svg>
   )
 }

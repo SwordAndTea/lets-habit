@@ -93,14 +93,17 @@ export default function NewHabitPage() {
         </HabitInfoItemWrap>
         <HabitInfoItemWrap name="Heatmap Customization">
           <div className={styles.editNewHeatmap}>
-            <input
-              className="mb-4"
-              type="color"
-              defaultValue={defaultHeatmapColor}
-              onChange={(e) => {
-                setHeatmapColor(e.target.value)
-              }}
-            />
+            <div className={styles.editNewColorPickerContainer} style={{backgroundColor: heatmapColor}}>
+              <input
+                id="heatmap-color-picker"
+                className="opacity-0"
+                type="color"
+                defaultValue={defaultHeatmapColor}
+                onChange={(e) => {
+                  setHeatmapColor(e.target.value)
+                }}
+              />
+            </div>
             <Heatmap
               color={heatmapColor}
               startDate={heatmapStartDate}

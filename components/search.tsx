@@ -7,6 +7,7 @@ import {AnonymousUsername} from "../util/const";
 import {GetEventPath} from "../util/event";
 import {SimplifiedUser} from "../util/user";
 import {PopViewDisplayType, PopViewDisplayTypeFloat} from "./common";
+import Image from "next/image";
 
 
 interface UserItemProps {
@@ -19,7 +20,7 @@ function UserItem(props: UserItemProps) {
     <div className="flex w-full h-full">
       {/*portrait*/}
       <div className="h-5/6 aspect-square rounded-full border-2 border-black mx-2 my-auto overflow-hidden">
-        {props.user.portrait ? <img src={props.user.portrait} alt="user-portrait"/> : <DefaultUserPortraitIcon/>}
+        {props.user.portrait ? <Image src={props.user.portrait} alt="user-portrait" fill/> : <DefaultUserPortraitIcon/>}
       </div>
       {/*name and uid*/}
       <div className="flex-1 mr-2 h-full">

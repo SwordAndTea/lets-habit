@@ -4,6 +4,7 @@ import {useEffect, useState} from "react";
 import {GetLocalUserInfo, InitialUser, User} from "../../util/user";
 import {useDropdownHandleOutsideClick} from "../hooks";
 import {DefaultUserPortraitIcon} from "../icons";
+import Image from "next/image";
 
 function Header() {
   const route = useRouter()
@@ -41,7 +42,7 @@ function Header() {
             setShowOptionList(!showOptionList)
           }}
         >
-          {userInfo.portrait ? <img src={userInfo.portrait} alt="user-portrait"/> :
+          {userInfo.portrait ? <Image src={userInfo.portrait} alt="user-portrait" fill/> :
             <DefaultUserPortraitIcon fill="white"/>}
         </button>
         {showOptionList && (

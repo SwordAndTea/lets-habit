@@ -1,4 +1,4 @@
-import {CircleCheckIcon, PlusIcon, SpinWaitIndicatorIcon} from "./icons";
+import {PlusIcon} from "./icons";
 import React, {useEffect, useState} from "react";
 
 interface ModalProps extends React.HtmlHTMLAttributes<HTMLDivElement> {

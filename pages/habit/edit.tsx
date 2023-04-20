@@ -40,28 +40,26 @@ export default function EditHabitPage(props: EditHabitPageProps) {
   let heatmapStartDate = CalculatedStartDay()
 
   useEffect(() => {
-    if (route.isReady) {
-      let habitInfo = props.habit
-      let userInfo = GetLocalUserInfo()
-      if (habitInfo) {
-        setHabit(habitInfo)
-        setHabitName(habitInfo.habit.name)
-        setIdentity(habitInfo.habit.identity ? habitInfo.habit.identity : "")
-        setCooperators(habitInfo.cooperators ? habitInfo.cooperators : [])
-        setHeatmapColor(habitInfo.user_custom_config.heatmap_color)
-        if (userInfo) {
-          setCurUser(userInfo)
-          if (habitInfo.habit.owner == userInfo.uid) {
-            setIsHabitOwner(true)
-          }
-        }
-        if (colorPickerRef.current) {
-          // @ts-ignore
-          colorPickerRef.current.value = habitInfo.user_custom_config.heatmap_color
+    let habitInfo = props.habit
+    let userInfo = GetLocalUserInfo()
+    if (habitInfo) {
+      setHabit(habitInfo)
+      setHabitName(habitInfo.habit.name)
+      setIdentity(habitInfo.habit.identity ? habitInfo.habit.identity : "")
+      setCooperators(habitInfo.cooperators)
+      setHeatmapColor(habitInfo.user_custom_config.heatmap_color)
+      if (userInfo) {
+        setCurUser(userInfo)
+        if (habitInfo.habit.owner == userInfo.uid) {
+          setIsHabitOwner(true)
         }
       }
+      if (colorPickerRef.current) {
+        // @ts-ignore
+        colorPickerRef.current.value = habitInfo.user_custom_config.heatmap_color
+      }
     }
-  }, [route.isReady])
+  }, [])
 
   const handleUpdate = () => {
     if (habit) {
@@ -98,7 +96,7 @@ export default function EditHabitPage(props: EditHabitPageProps) {
 
       // get cooperators to add
       let cooperatorToAdd = []
-      if (!habit.cooperators) {
+      if (habit.cooperators.length == 0) {
         cooperatorToAdd = cooperators.map((value) => {
           return value.uid
         })
@@ -118,7 +116,7 @@ export default function EditHabitPage(props: EditHabitPageProps) {
 
       // get cooperators to delete
       let cooperatorToDelete = []
-      if (habit.cooperators) {
+      if (habit.cooperators.length > 0) {
         for (let c of habit.cooperators) {
           if (cooperators.findIndex((value) => {
             return value.uid == c.uid
@@ -197,15 +195,18 @@ export default function EditHabitPage(props: EditHabitPageProps) {
         </HabitInfoItemWrap>
         <HabitInfoItemWrap name="Heatmap Customization">
           <div className={styles.editNewHeatmap}>
-            <input
-              className="mb-4"
-              type="color"
-              defaultValue={heatmapColor}
-              onChange={(e) => {
-                setHeatmapColor(e.target.value)
-              }}
-              ref={colorPickerRef}
-            />
+            <div className={styles.editNewColorPickerContainer} style={{backgroundColor: heatmapColor}}>
+              <input
+                id="heatmap-color-picker"
+                className="opacity-0"
+                type="color"
+                onChange={(e) => {
+                  setHeatmapColor(e.target.value)
+                }}
+                ref={colorPickerRef}
+              />
+            </div>
+
             <Heatmap
               color={heatmapColor}
               startDate={heatmapStartDate}

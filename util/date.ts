@@ -18,7 +18,7 @@ export const IsSameDay = (l: Date, r: Date): boolean => {
 function twoDigitNum(n: number) {
   if (n < 0 && n > -10) {
     return '-0' + Math.abs(n)
-  } else if (n > 0 && n < 10) {
+  } else if (n >= 0 && n < 10) {
     return '0' + n
   }
   return n.toString()

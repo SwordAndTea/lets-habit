@@ -1,15 +1,16 @@
 import React, {useEffect, useState} from "react";
 import {useRouter} from "next/router";
 import {EditIcon, DeleteIcon, OptionsIcon} from "../components/icons";
-import {HabitIDURLParam, HabitToEdit, RoutePath} from "../util/const";
+import {HabitIDURLParam, RoutePath} from "../util/const";
 import {useDropdownHandleOutsideClick} from "../components/hooks";
 import {getUserInfo} from "../api/user";
 import {User} from "../util/user";
-import {listHabit, logHabit} from "../api/habit";
+import {deleteHabit, listHabit, logHabit} from "../api/habit";
 import {DetailedHabit} from "../util/habit";
 import {Pagination} from "../components/pagination";
 import Heatmap from "../components/heatmap";
 import {CalculatedStartDay, DateToRFC3339FormatString} from "../util/date";
+import {AvatarList} from "../components/avatar_list";
 
 
 interface HabitCardProps {
@@ -38,7 +39,7 @@ function HabitCard(props: HabitCardProps) {
 
   return (
     <div
-      className="w-full py-8 px-16 border-1 rounded-xl bg-white shadow-[0px_0px_15px_rgba(0,0,0,0.3)]"
+      className="w-full py-8 px-16 rounded-xl bg-white shadow-[0px_0px_15px_rgba(0,0,0,0.3)]"
     >
       <div className="my-1 flex"> {/*container for habit title options button*/}
         <h1 className="text-4xl text-gray-600">{props.habit.habit.name}</h1>
@@ -94,6 +95,8 @@ function HabitCard(props: HabitCardProps) {
         singleColor
       />
 
+      <AvatarList users={props.habit.cooperators} logStatus={new Map(Object.entries(props.habit.cooperator_log_status))}/>
+
       <div className="flex w-full">
         <div className="flex space-x-2">
           <LogInfoCard name="current streak" value={props.habit.user_custom_config.current_streak}/>
@@ -132,16 +135,16 @@ export default function Home(props: HomePageProps) {
   const [page, setPage] = useState(1)
   const [habits, setHabits] = useState<DetailedHabit[]>([])
   const [totalHabitNum, setTotalHabitNum] = useState(0)
+  const [showModel, setShowModal] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false)
 
   useEffect(() => {
-    if (route.isReady) {
-      localStorage.setItem("user", JSON.stringify(props.user))
-      listHabit(1, pageSize, DateToRFC3339FormatString(startDate), DateToRFC3339FormatString(endDate)).then((resp) => {
-        setHabits(resp.data.data.habits)
-        setTotalHabitNum(resp.data.data.total)
-      })
-    }
-  }, [route.isReady])
+    localStorage.setItem("user", JSON.stringify(props.user))
+    listHabit(page, pageSize, DateToRFC3339FormatString(startDate), DateToRFC3339FormatString(endDate)).then((resp) => {
+      setHabits(resp.data.data.habits)
+      setTotalHabitNum(resp.data.data.total)
+    })
+  }, [])
 
   const toNewHabitPage = () => {
     route.push(RoutePath.NewHabitPage)
@@ -157,8 +160,18 @@ export default function Home(props: HomePageProps) {
     })
   }
 
-  const doDeleteHabit = (habitID: number) => {
+  // handleDeleteClicked, present confirm delete modal
+  const handleDeleteClicked = () => {
 
+  }
+
+  const doDeleteHabit = (habitID: number) => {
+    setIsDeleting(true)
+    deleteHabit(habitID).then(() => {
+      // TODO: judge whether should update page info and refetch habit
+    }).finally(() => {
+      setIsDeleting(false)
+    })
   }
 
   const doHabitLog = (habitID: number) => {
@@ -167,12 +180,17 @@ export default function Home(props: HomePageProps) {
         let newHabits = habits.map((value) => {
           if (value.habit.id == habitID) {
             value.today_logged = true
-            debugger
+            // @ts-ignore
+            value.cooperator_log_status[props.user.uid] = true
             if (resp.data.data.log_record) {
               if (value.log_records == undefined) {
                 value.log_records = [resp.data.data.log_record]
               } else {
                 value.log_records.push(resp.data.data.log_record)
+              }
+              value.user_custom_config.current_streak += 1
+              if (value.user_custom_config.current_streak > value.user_custom_config.longest_streak) {
+                value.user_custom_config.longest_streak = value.user_custom_config.current_streak
               }
             }
           }
@@ -204,7 +222,7 @@ export default function Home(props: HomePageProps) {
                 startData={startDate}
                 endDate={endDate}
                 onEditHabit={toEditHabitPage}
-                onDeleteHabit={doDeleteHabit}
+                onDeleteHabit={handleDeleteClicked}
                 onHabitLog={doHabitLog}
               />
             </li>
@@ -239,6 +257,8 @@ export default function Home(props: HomePageProps) {
 export async function getServerSideProps(context: object) {
   // @ts-ignore
   return await getUserInfo(context.req.headers.cookie).then((resp) => {
+    // @ts-ignore
+    context.res.setHeader('set-cookie', resp.headers["set-cookie"])
     if (resp.data.data.user.user_register_type == "email" && !resp.data.data.user.email_active) {
       return {
         redirect: {

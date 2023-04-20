@@ -25,7 +25,8 @@ export interface DetailedHabit {
   user_custom_config: UserHabitConfig
   log_records: HabitLogRecord[] | null
   today_logged: boolean
-  cooperators: SimplifiedUser[] | null
+  cooperators: SimplifiedUser[]
+  cooperator_log_status: Map<string, boolean>
 }
 
 export enum Weekday {

@@ -1,6 +1,4 @@
-import {RoutePath, UserLocalStorageKey} from "./const";
-import {AxiosResponse} from "axios";
-import {NextRouter} from "next/router";
+import {UserLocalStorageKey} from "./const";
 
 export interface User {
   uid: string

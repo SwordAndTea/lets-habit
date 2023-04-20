@@ -31,6 +31,10 @@
   @apply w-full rounded-lg p-2 editNewBlurRing;
 }
 
+.editNewColorPickerContainer {
+  @apply mb-4 w-7 h-7 rounded-full border-2 border-gray-200;
+}
+
 .editNewHeatmap {
   @apply rounded-lg p-4 editNewBlurRing;
 }
