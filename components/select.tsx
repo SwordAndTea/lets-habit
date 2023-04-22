@@ -40,7 +40,7 @@ export default function Select(props: SelectProps) {
   return (
     <div className={`relative ${className}`} {...otherProps}>
       <button
-        className={`w-full flex ${buttonClassName}`}
+        className={`w-full flex space-x-2 border-gray-400 border-2 rounded px-2 py-1 ${buttonClassName}`}
         ref={btnRef}
         onClick={() => {
           setShowOptionList(!showOptionList)
