@@ -9,7 +9,7 @@ export function Pagination(props: PaginationProps) {
   return (
     <div className="inline-flex items-center justify-center gap-3">
       <button
-        className="inline-flex h-8 w-8 items-center justify-center rounded border border-gray-100"
+        className="inline-flex bg-white h-8 w-8 items-center justify-center rounded border border-gray-100"
         onClick={props.toPreviousPage}
         disabled={props.currentPage == 1}
       >
@@ -35,7 +35,7 @@ export function Pagination(props: PaginationProps) {
       </p>
 
       <button
-        className="inline-flex h-8 w-8 items-center justify-center rounded border border-gray-100"
+        className="inline-flex bg-white h-8 w-8 items-center justify-center rounded border border-gray-100"
         onClick={props.toNextPage}
         disabled={props.currentPage == props.totalPage}
       >
