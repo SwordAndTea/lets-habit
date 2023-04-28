@@ -1,4 +1,4 @@
-import {userLoginByEmail, userPing, userRegisterByEmail} from "../api/user";
+import {getUserInfo, userLoginByEmail, userRegisterByEmail} from "../api/user";
 import React, {useState} from "react";
 import {LayoutFooterOnly} from "../components/layout/layout";
 import {NextRouter, useRouter} from "next/router";
@@ -6,6 +6,7 @@ import {noti} from "../util/noti";
 import {SpinWaitIndicatorIcon, WeChatIcon} from "../components/icons";
 import {RoutePath} from "../util/const";
 import {AxiosResponse} from "axios";
+import {GetServerSideProps} from "next";
 
 
 export default function Login() {
@@ -17,7 +18,6 @@ export default function Login() {
   const route = useRouter()
 
   const handleUserResp = (resp: AxiosResponse, route: NextRouter) => {
-    localStorage.setItem("user", JSON.stringify(resp.data.data.user))
     if (resp.data.data.user.user_register_type == "email" && !resp.data.data.user.email_active) {
       route.push(RoutePath.EmailActivateSendPage)
     } else {
@@ -192,9 +192,19 @@ Login.getLayout = (page) => {
   return <LayoutFooterOnly>{page}</LayoutFooterOnly>
 }
 
-export async function getServerSideProps(context: object) {
-  // @ts-ignore
-  return await userPing(context.req.headers.cookie).then(() => {
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  return await getUserInfo(context.req.headers.cookie).then((resp) => {
+    if (resp.headers["set-cookie"]) {
+      context.res.setHeader('set-cookie', resp.headers["set-cookie"])
+    }
+    if (resp.data.data.user.user_register_type == "email" && !resp.data.data.user.email_active) {
+      return {
+        redirect: {
+          destination: RoutePath.EmailActivateSendPage,
+          permanent: false,
+        }
+      }
+    }
     return {
       redirect: {
         destination: RoutePath.HomePage,

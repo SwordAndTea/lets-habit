@@ -22,7 +22,7 @@ export function AvatarList(props: AvatarListProps) {
         return (
           <div key={value.uid} className="flex flex-col space-y-1">
             <UserDetailCard user={value} logged={!!logStatus?.get(value.uid)}>
-              <div className="relative my-auto w-7 aspect-square rounded-full border-2 border-white overflow-hidden">
+              <div className="relative my-auto w-7 aspect-square rounded-full border-2 border-white overflow-hidden cursor-pointer">
                 {value.portrait ? <Image alt={value.uid} src={value.portrait} className="object-contain" fill/> :
                   <DefaultUserPortraitIcon className="bg-gray-200"/>}
               </div>

@@ -1,4 +1,7 @@
-import {UserLocalStorageKey} from "./const";
+import {RoutePath, UserLocalStorageKey} from "./const";
+import {GetServerSidePropsContext, PreviewData} from "next";
+import {ParsedUrlQuery} from "querystring";
+import {getUserInfo} from "../api/user";
 
 export interface User {
   uid: string

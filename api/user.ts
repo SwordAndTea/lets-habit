@@ -1,13 +1,6 @@
 import {apiV1, reqHandler} from "./base";
 
-
-export const userPing = async (extraCookie = undefined) => {
-  return reqHandler.get(`${apiV1}/user/ping`, {
-    headers: extraCookie ? {Cookie: extraCookie} : undefined
-  })
-}
-
-export const getUserInfo = async (extraCookie = undefined) => {
+export const getUserInfo = async (extraCookie?: string) => {
   return reqHandler.get(`${apiV1}/user`, {
     headers: extraCookie ? {Cookie: extraCookie} : undefined
   })

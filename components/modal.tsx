@@ -1,24 +1,43 @@
+import React from "react";
 import {PlusIcon} from "./icons";
-import React, {useEffect, useState} from "react";
 
 interface ModalProps extends React.HtmlHTMLAttributes<HTMLDivElement> {
+  maskClassName?: string
+  containerClassName?: string
   closable?: boolean
   onClose?: () => void
+  clickMask?: () => void
 }
 
 export function Modal(props: ModalProps) {
-  const [startAnimate, setStartAnimate] = useState(false)
+  const {
+    maskClassName,
+    containerClassName,
+    closable,
+    onClose,
+    clickMask,
+    ...otherProps
+  } = props
 
-  useEffect(() => {
-    setStartAnimate(true)
-  }, [])
+  let finalClickMaskHandler = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    if (clickMask) {
+      clickMask()
+    }
+  }
 
   return (
-    <div className="fixed z-50 top-0 right-0 bottom-0 left-0 flex bg-gray-500/75">
+    /*mask*/
+    <div
+      className={`fixed z-50 top-0 right-0 bottom-0 left-0 flex bg-gray-500/50 ${maskClassName}`}
+      onClick={finalClickMaskHandler}
+      {...otherProps}
+    >
+      {/*container*/}
       <div
-        className={`relative ${startAnimate ? "max-w-3xl max-h-28 py-2" : "max-w-0 max-h-0"} rounded-lg m-auto flex flex-col bg-gray-800 overflow-hidden transition-all duration-500`}>
-        {props.closable && (
-          <button className="absolute top-1 right-1 w-4 h-4 rounded-full bg-gray-300 flex">
+        className={`relative m-auto flex flex-col p-4 rounded-xl bg-white overflow-hidden animate-pop-in ${containerClassName}`}>
+        {closable && (
+          <button className="absolute top-1 right-1 w-4 h-4 rounded-full bg-gray-300 flex" onClick={onClose}>
             <PlusIcon fill="gray" className="m-auto rotate-45 w-3 h-3"/>
           </button>
         )}

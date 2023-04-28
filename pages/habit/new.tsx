@@ -15,7 +15,7 @@ import {HabitInfoItemWrap} from "../../components/habit_new_edit_shared";
 export default function NewHabitPage() {
   const route = useRouter()
 
-  const [curUser, setCurUser] = useState<SimplifiedUser | null>(null)
+  const [fixUsers, setFixedUsers] = useState<SimplifiedUser[]>([])
 
   const [isCreating, setIsCreating] = useState(false)
   const [habitName, setHabitName] = useState("")
@@ -31,7 +31,7 @@ export default function NewHabitPage() {
   useEffect(() => {
     let userInfo = GetLocalUserInfo()
     if (userInfo) {
-      setCurUser(userInfo)
+      setFixedUsers([userInfo])
     }
   }, [])
 
@@ -77,7 +77,7 @@ export default function NewHabitPage() {
             inputClassName={styles.editNewUserSearcherInput}
             resultContainerClassName=""
             resultItemClassName=""
-            fixedUsers={curUser ? [curUser] : undefined}
+            fixedUsers={fixUsers}
             onSelectUserChange={(users) => {
               setCooperators(users)
             }}

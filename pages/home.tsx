@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {useRouter} from "next/router";
-import {EditIcon, DeleteIcon, OptionsIcon} from "../components/icons";
+import {EditIcon, DeleteIcon, OptionsIcon, SpinWaitIndicatorIcon} from "../components/icons";
 import {HabitIDURLParam, RoutePath} from "../util/const";
 import {useDropdownHandleOutsideClick} from "../components/hooks";
 import {getUserInfo} from "../api/user";
@@ -11,6 +11,9 @@ import {Pagination} from "../components/pagination";
 import Heatmap from "../components/heatmap";
 import {CalculatedStartDay, DateToRFC3339FormatString} from "../util/date";
 import {AvatarList} from "../components/avatar_list";
+import {Modal} from "../components/modal";
+import {noti} from "../util/noti";
+import {GetServerSideProps} from "next";
 
 
 interface HabitCardProps {
@@ -95,7 +98,8 @@ function HabitCard(props: HabitCardProps) {
         singleColor
       />
 
-      <AvatarList users={props.habit.cooperators} logStatus={new Map(Object.entries(props.habit.cooperator_log_status))}/>
+      <AvatarList users={props.habit.cooperators}
+                  logStatus={new Map(Object.entries(props.habit.cooperator_log_status))}/>
 
       <div className="flex w-full">
         <div className="flex space-x-2">
@@ -127,24 +131,34 @@ interface HomePageProps {
 }
 
 export default function Home(props: HomePageProps) {
+  console.log("home page props:", props)
   const route = useRouter()
   const pageSize = 5
   const endDate = new Date()
   const startDate = CalculatedStartDay()
 
+  const [isFetchingHabit, setIsFetchingHabit] = useState(false)
   const [page, setPage] = useState(1)
   const [habits, setHabits] = useState<DetailedHabit[]>([])
   const [totalHabitNum, setTotalHabitNum] = useState(0)
   const [showModel, setShowModal] = useState(false)
+  const [deletingHabitID, setDeletingHabitID] = useState(-1)
   const [isDeleting, setIsDeleting] = useState(false)
 
   useEffect(() => {
-    localStorage.setItem("user", JSON.stringify(props.user))
+    doFetchHabit()
+  }, [])
+
+  const doFetchHabit = () => {
+    setIsFetchingHabit(true)
     listHabit(page, pageSize, DateToRFC3339FormatString(startDate), DateToRFC3339FormatString(endDate)).then((resp) => {
       setHabits(resp.data.data.habits)
       setTotalHabitNum(resp.data.data.total)
+      setTimeout(() => {
+        setIsFetchingHabit(false)
+      }, 200)
     })
-  }, [])
+  }
 
   const toNewHabitPage = () => {
     route.push(RoutePath.NewHabitPage)
@@ -161,16 +175,15 @@ export default function Home(props: HomePageProps) {
   }
 
   // handleDeleteClicked, present confirm delete modal
-  const handleDeleteClicked = () => {
-
-  }
 
   const doDeleteHabit = (habitID: number) => {
     setIsDeleting(true)
     deleteHabit(habitID).then(() => {
-      // TODO: judge whether should update page info and refetch habit
+      noti.success("deleted")
+      doFetchHabit()
     }).finally(() => {
       setIsDeleting(false)
+      setShowModal(false)
     })
   }
 
@@ -201,8 +214,43 @@ export default function Home(props: HomePageProps) {
     })
   }
 
+  if (isFetchingHabit) {
+    return (
+      <SpinWaitIndicatorIcon className="m-auto w-20 h-20 fill-white"/>
+    )
+  }
+
   return (
     <div className="w-full py-4 px-52 space-y-8">
+      {/*modal*/}
+      {showModel && (
+        <Modal closable={!isDeleting} onClose={() => {
+          setShowModal(false)
+        }}>
+          {isDeleting ? (
+            <div>
+              <SpinWaitIndicatorIcon/>
+              <p className="text-rose-300">deleting</p>
+            </div>
+          ) : (
+            <div className="space-y-6 mt-2">
+              <p>are you sure to delete this habit</p>
+              <div className="space-x-1 flex justify-end">
+                <button
+                  className="bg-gray-200 text-rose-500 w-20 py-1 rounded-lg"
+                  onClick={() => {
+                    doDeleteHabit(deletingHabitID)
+                  }}
+                >
+                  confirm
+                </button>
+              </div>
+
+            </div>
+          )}
+        </Modal>
+      )}
+      {/*new habit btn*/}
       <div className="flex">
         <button
           className="h-10 p-2 ml-auto rounded-md bg-black text-amber-50 shadow-[0px_3px_gray] active:translate-y-[3px] active:shadow-none"
@@ -211,24 +259,33 @@ export default function Home(props: HomePageProps) {
           New Habit
         </button>
       </div>
-
       {/*habit table*/}
-      <ul className="my-6">
-        {habits.map((value, index) => {
-          return (
-            <li className="mb-8" key={index}>
-              <HabitCard
-                habit={value}
-                startData={startDate}
-                endDate={endDate}
-                onEditHabit={toEditHabitPage}
-                onDeleteHabit={handleDeleteClicked}
-                onHabitLog={doHabitLog}
-              />
-            </li>
-          )
-        })}
-      </ul>
+      {habits.length > 0 ? (
+        <ul className="my-6">
+          {habits.map((value, index) => {
+            return (
+              <li className="mb-8" key={index}>
+                <HabitCard
+                  habit={value}
+                  startData={startDate}
+                  endDate={endDate}
+                  onEditHabit={toEditHabitPage}
+                  onDeleteHabit={() => {
+                    setDeletingHabitID(value.habit.id)
+                    setShowModal(true)
+                  }}
+                  onHabitLog={doHabitLog}
+                />
+              </li>
+            )
+          })}
+        </ul>
+      ) : (
+        <div className="flex h-1/2">
+          <div className="m-auto">No Habits, Create One</div>
+        </div>
+      )}
+
       <span className="block text-right text-gray-500">
         <span className="text-red-500">*</span> notice: all habits&apos; log deadline is next day 4:00 AM
       </span>
@@ -254,11 +311,11 @@ export default function Home(props: HomePageProps) {
   )
 }
 
-export async function getServerSideProps(context: object) {
-  // @ts-ignore
+export const getServerSideProps: GetServerSideProps = async (context) => {
   return await getUserInfo(context.req.headers.cookie).then((resp) => {
-    // @ts-ignore
-    context.res.setHeader('set-cookie', resp.headers["set-cookie"])
+    if (resp.headers["set-cookie"]) {
+      context.res.setHeader('set-cookie', resp.headers["set-cookie"])
+    }
     if (resp.data.data.user.user_register_type == "email" && !resp.data.data.user.email_active) {
       return {
         redirect: {

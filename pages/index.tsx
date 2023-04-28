@@ -1,16 +1,27 @@
 import {RoutePath} from "../util/const";
-import {userPing} from "../api/user";
+import {getUserInfo} from "../api/user";
+import {GetServerSideProps} from "next";
 
 export default function RootPage() {
   return <></>
 }
 
-export async function getServerSideProps(context: object) {
-  // @ts-ignore
-  return await userPing(context.req.headers.cookie).then(() => {
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  return await getUserInfo(context.req.headers.cookie).then((resp) => {
+    if (resp.headers["set-cookie"]) {
+      context.res.setHeader('set-cookie', resp.headers["set-cookie"])
+    }
+    if (resp.data.data.user.user_register_type == "email" && !resp.data.data.user.email_active) {
+      return {
+        redirect: {
+          destination: RoutePath.EmailActivateSendPage,
+          permanent: false,
+        }
+      }
+    }
     return {
       redirect: {
-        destination: RoutePath.HomePage,
+        destination: `${RoutePath.HomePage}?page=1`,
         permanent: false,
       }
     }

@@ -17,6 +17,7 @@ import {
 } from "../../api/habit";
 import {noti} from "../../util/noti";
 import {SpinWaitIndicatorIcon} from "../../components/icons";
+import {GetServerSideProps} from "next";
 
 interface EditHabitPageProps {
   habit: DetailedHabit | null
@@ -41,8 +42,8 @@ export default function EditHabitPage(props: EditHabitPageProps) {
 
   useEffect(() => {
     let habitInfo = props.habit
-    let userInfo = GetLocalUserInfo()
     if (habitInfo) {
+      let userInfo = GetLocalUserInfo()
       setHabit(habitInfo)
       setHabitName(habitInfo.habit.name)
       setIdentity(habitInfo.habit.identity ? habitInfo.habit.identity : "")
@@ -146,6 +147,15 @@ export default function EditHabitPage(props: EditHabitPageProps) {
     }
   }
 
+  if (!props.habit) {
+    return (
+      <div className="m-auto flex flex-col justify-center items-center">
+        <div className="text-5xl">404</div>
+        <div>wops, no habit found !!!</div>
+      </div>
+    )
+  }
+
   return (
     <div className={styles.editNewOutsideContainer}>
       {/*form*/}
@@ -240,9 +250,9 @@ export default function EditHabitPage(props: EditHabitPageProps) {
   )
 }
 
-export async function getServerSideProps(context: object) {
-  // @ts-ignore
-  return await getHabit(context.query[HabitIDURLParam], context.req.headers.cookie).then((resp) => {
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  console.log(parseInt(context.query[HabitIDURLParam] as string, 10))
+  return await getHabit(parseInt(context.query[HabitIDURLParam] as string, 10), context.req.headers.cookie).then((resp) => {
     return {
       props: {
         habit: resp.data.data.habit

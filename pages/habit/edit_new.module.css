@@ -40,15 +40,15 @@
 }
 
 .editNewBtnContainer {
-  @apply flex mt-6;
+  @apply flex justify-end mt-6 space-x-4;
 }
 
 .editNewCancelBtn {
-  @apply ml-auto bg-gray-300 text-rose-500 w-24 h-10 rounded-lg;
+  @apply bg-gray-300 text-rose-500 w-24 h-10 rounded-lg;
 }
 
 .editNewConfirmBtn {
-  @apply ml-4 bg-black text-white w-24 h-10 rounded-lg flex;
+  @apply bg-black text-white w-24 h-10 rounded-lg flex;
 }
 
 .editNewConfirmSpan {

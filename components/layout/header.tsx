@@ -27,7 +27,10 @@ function Header() {
       <button
         className="text-white mr-auto ml-6"
         onClick={() => {
-          route.replace(RoutePath.HomePage)
+          route.replace({
+            pathname: RoutePath.HomePage,
+            query: {"page": 1},
+          })
         }}
       >
         Lets-Habit
