@@ -1,97 +1,69 @@
-import {createContext, useContext, useEffect, useReducer, useRef, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {useRouter} from "next/router";
-import {EditIcon, DeleteIcon} from "../components/icons/icons";
-import {HabitIDURLParam, RoutePath, UserTokenHeader} from "../util/const";
+import {EditIcon, DeleteIcon, OptionsIcon, SpinWaitIndicatorIcon} from "../components/icons";
+import {HabitIDURLParam, RoutePath} from "../util/const";
+import {useDropdownHandleOutsideClick} from "../components/hooks";
+import {CommonServerGetSideUserProp, User} from "../util/user";
+import {deleteHabit, listHabit, logHabit} from "../api/habit";
+import {DetailedHabit} from "../util/habit";
+import {Pagination} from "../components/pagination";
+import Heatmap from "../components/heatmap";
+import {CalculatedStartDay, DateToRFC3339FormatString} from "../util/date";
+import {AvatarList} from "../components/avatar_list";
+import {Modal} from "../components/modal";
+import {noti} from "../util/noti";
 
-enum HabitType {
-  Good,
-  Bad,
-}
-
-enum HabitCheckFrequency {
-  Daily,
-  Weekly,
-}
 
 interface HabitCardProps {
-  habitID: string
-  title: string
-  habitType: HabitType
-  checkFrequency: string
-  checkDelayHour: number
-  remainRetroactiveChance: number
-
-  onEditHabit: (habitID: string) => void
-  onDeleteHabit: (habitID: string) => void
+  habit: DetailedHabit
+  startData: Date
+  endDate: Date
+  onEditHabit: (habit: DetailedHabit) => void
+  onDeleteHabit: (habitID: number) => void
+  onHabitLog: (habitID: number) => void
 }
 
 
 function HabitCard(props: HabitCardProps) {
-  const [showOptions, setShowOptions] = useState(false)
-  // const selectedHabitCtx = useContext(selectedHabitContext)
-  const optionBtnRef = useRef(null);
-  const optionListRef = useRef(null);
+  const [showOptionList, setShowOptionList, btnRef, optionListRef] = useDropdownHandleOutsideClick()
 
-  const handleOutsideClick = (e: Event) => {
-    if (!optionListRef.current || !optionBtnRef.current) {
-      return
-    }
-
-    // @ts-ignore
-    if (optionBtnRef.current.contains(e.target as Node)) {
-      return
-    }
-
-    // @ts-ignore
-    if (e.target != optionListRef.current && !optionListRef.current.contains(e.target as Node)) {
-      setShowOptions(false)
-    }
+  // @ts-ignore
+  const LogInfoCard = ({name, value}) => {
+    return (
+      <div className="hover:-translate-y-1 transition-transform duration-200">
+        <p className="text-center w-32 h-6 font-bold text-pink-600">{value}</p>
+        <div className="h-[1px] border-b border-gray-400 w-32"></div>
+        <p className="text-center w-32 h-12 text-xs font-bold text-gray-400">{name}</p>
+      </div>
+    )
   }
-
-  useEffect(() => {
-    document.addEventListener("click", handleOutsideClick)
-    return () => {
-      return document.removeEventListener("click", handleOutsideClick)
-    };
-  }, []);
-
 
   return (
     <div
-      className="w-full border-1 rounded-xl bg-white shadow-[0px_0px_15px_rgba(0,0,0,0.3)]"
+      className="w-full py-8 px-16 rounded-xl bg-white shadow-[0px_0px_15px_rgba(0,0,0,0.3)]"
     >
-      <div className="ml-4 my-1 flex"> {/*container for habit title options button*/}
-        <h1 className="text-4xl">{props.title}</h1>
+      <div className="my-1 flex"> {/*container for habit title options button*/}
+        <h1 className="text-4xl text-gray-600">{props.habit.habit.name}</h1>
         {/*options button*/}
         <div className="ml-auto relative flex">
           <button
             className="m-auto"
-            ref={optionBtnRef}
+            ref={btnRef}
             onClick={() => {
-              setShowOptions(!showOptions)
+              setShowOptionList(!showOptionList)
             }}
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 32 32"
-              width="32"
-              height="32"
-              className="fill-gray-500 hover:fill-black"
-            >
-              <circle cx="50%" cy="8" r="3"/>
-              <circle cx="50%" cy="16" r="3"/>
-              <circle cx="50%" cy="24" r="3"/>
-            </svg>
+            <OptionsIcon className="w-2 h-10 fill-gray-500 hover:fill-black"/>
           </button>
-          {showOptions && (
+          {showOptionList && (
             <ul
-              className="absolute top-full right-1/2 rounded shadow-md bg-black text-amber-50"
+              className="absolute top-full right-1/2 rounded shadow-md bg-black text-amber-50 overflow-hidden"
               ref={optionListRef}
             >
               <li className="flex p-1.5 active:bg-gray-400 ">
                 <EditIcon className="fill-amber-50 mr-1" width="20" height="20"/>
                 <button onClick={() => {
-                  props.onEditHabit(props.habitID)
+                  props.onEditHabit(props.habit)
                 }}>
                   edit
                 </button>
@@ -99,7 +71,7 @@ function HabitCard(props: HabitCardProps) {
               <li className="flex p-1.5 active:bg-gray-400 ">
                 <DeleteIcon className="fill-red-600 mr-1" width="20" height="20"/>
                 <button className="text-red-600" onClick={() => {
-                  props.onDeleteHabit(props.habitID)
+                  props.onDeleteHabit(props.habit.habit.id)
                 }}>
                   delete
                 </button>
@@ -109,106 +81,231 @@ function HabitCard(props: HabitCardProps) {
 
         </div>
       </div>
-      {/*TODO: replace with calender heatmap*/}
-      <div className="mx-4 my-1 h-[200px] border"/>
 
-      <span className="ml-4 my-1 block text-lg">{`check frequency: ${props.checkFrequency}`}</span>
-      <span
-        className="ml-4 my-1 block text-lg">{`check deadline: ${props.checkDelayHour == 0 ? "today 24:00" : `next day ${props.checkDelayHour}:00`}`}</span>
-      <span className="ml-4 my-1 block text-lg">{`remain retroactive chance: ${props.remainRetroactiveChance}`}</span>
-      <button
-        className="ml-4 my-1"
-        onClick={() => {
-          //TODO: handle check habit
-        }}
-      >
-        check
-      </button>
+      <Heatmap
+        className="my-3"
+        color={props.habit.user_custom_config.heatmap_color}
+        data={props.habit.log_records ? props.habit.log_records.map((value) => {
+          return {
+            date: new Date(value.log_at),
+            value: 1
+          }
+        }) : []}
+        startDate={props.startData}
+        endDate={props.endDate}
+        singleColor
+      />
+
+      <AvatarList users={props.habit.cooperators}
+                  logStatus={new Map(Object.entries(props.habit.cooperator_log_status))}/>
+
+      <div className="flex w-full">
+        <div className="flex space-x-2">
+          <LogInfoCard name="current streak" value={props.habit.user_custom_config.current_streak}/>
+          <LogInfoCard name="longest streak" value={props.habit.user_custom_config.longest_streak}/>
+          <LogInfoCard name="remain  retroactive chance"
+                       value={props.habit.user_custom_config.remain_retroactive_chance}/>
+
+        </div>
+        {props.habit.today_logged ? (
+          <button className="w-36 h-8 ml-auto my-auto text-white rounded-lg bg-gray-400 text-center" disabled>
+            Already Logged
+          </button>
+        ) : (
+          <button className="w-24 h-8 ml-auto my-auto text-white rounded-lg bg-pink-600" onClick={() => {
+            props.onHabitLog(props.habit.habit.id)
+          }}>
+            Log
+          </button>
+        )}
+      </div>
     </div>
   )
 }
 
 
-export default function Home() {
-  const [habitType, setHabitType] = useState(HabitType.Good)
+interface HomePageProps {
+  user: User
+}
+
+export default function Home(props: HomePageProps) {
   const route = useRouter()
+  const pageSize = 5
+  const endDate = new Date()
+  const startDate = CalculatedStartDay()
+
+  const [isFetchingHabit, setIsFetchingHabit] = useState(false)
+  const [page, setPage] = useState(1)
+  const [habits, setHabits] = useState<DetailedHabit[]>([])
+  const [totalHabitNum, setTotalHabitNum] = useState(0)
+  const [showModel, setShowModal] = useState(false)
+  const [deletingHabitID, setDeletingHabitID] = useState(-1)
+  const [isDeleting, setIsDeleting] = useState(false)
 
   useEffect(() => {
-    if (localStorage.getItem(UserTokenHeader) == null) { // TODO: replace with get habit list
-      route.replace(RoutePath.LoginPage)
-    }
-  })
+    doFetchHabit()
+  }, [])
+
+  const doFetchHabit = () => {
+    setIsFetchingHabit(true)
+    listHabit(page, pageSize, DateToRFC3339FormatString(startDate), DateToRFC3339FormatString(endDate)).then((resp) => {
+      setHabits(resp.data.data.habits)
+      setTotalHabitNum(resp.data.data.total)
+      setTimeout(() => {
+        setIsFetchingHabit(false)
+      }, 200)
+    })
+  }
 
   const toNewHabitPage = () => {
     route.push(RoutePath.NewHabitPage)
   }
 
-  const toEditHabitPage = (habitID: string) => {
+  const toEditHabitPage = (habit: DetailedHabit) => {
     let query = {}
     // @ts-ignore
-    query[HabitIDURLParam] = habitID
-    route.push(RoutePath.EditHabitPage, {
+    query[HabitIDURLParam] = habit.habit.id
+    route.push({
+      pathname: RoutePath.EditHabitPage,
       query: query
     })
   }
 
-  const doDeleteHabit = (habitID: string) => {
+  // handleDeleteClicked, present confirm delete modal
 
+  const doDeleteHabit = (habitID: number) => {
+    setIsDeleting(true)
+    deleteHabit(habitID).then(() => {
+      noti.success("deleted")
+      doFetchHabit()
+    }).finally(() => {
+      setIsDeleting(false)
+      setShowModal(false)
+    })
+  }
+
+  const doHabitLog = (habitID: number) => {
+    logHabit(habitID, DateToRFC3339FormatString(new Date())).then((resp) => {
+      if (resp.data && resp.data.data) {
+        let newHabits = habits.map((value) => {
+          if (value.habit.id == habitID) {
+            value.today_logged = true
+            // @ts-ignore
+            value.cooperator_log_status[props.user.uid] = true
+            if (resp.data.data.log_record) {
+              if (value.log_records == undefined) {
+                value.log_records = [resp.data.data.log_record]
+              } else {
+                value.log_records.push(resp.data.data.log_record)
+              }
+              value.user_custom_config.current_streak += 1
+              if (value.user_custom_config.current_streak > value.user_custom_config.longest_streak) {
+                value.user_custom_config.longest_streak = value.user_custom_config.current_streak
+              }
+            }
+          }
+          return value
+        })
+        setHabits(newHabits)
+      }
+    })
+  }
+
+  if (isFetchingHabit) {
+    return (
+      <SpinWaitIndicatorIcon className="m-auto w-20 h-20 fill-white"/>
+    )
   }
 
   return (
-    <div className="my-4">
-      <div className="flex"> {/*top button container*/}
-        {/*habits to form button*/}
+    <div className="w-full py-4 px-52 space-y-8">
+      {/*modal*/}
+      {showModel && (
+        <Modal closable={!isDeleting} onClose={() => {
+          setShowModal(false)
+        }}>
+          {isDeleting ? (
+            <div>
+              <SpinWaitIndicatorIcon/>
+              <p className="text-rose-300">deleting</p>
+            </div>
+          ) : (
+            <div className="space-y-6 mt-2">
+              <p>are you sure to delete this habit</p>
+              <div className="space-x-1 flex justify-end">
+                <button
+                  className="bg-gray-200 text-rose-500 w-20 py-1 rounded-lg"
+                  onClick={() => {
+                    doDeleteHabit(deletingHabitID)
+                  }}
+                >
+                  confirm
+                </button>
+              </div>
+
+            </div>
+          )}
+        </Modal>
+      )}
+      {/*new habit btn*/}
+      <div className="flex">
         <button
-          className={`w-40 ml-auto p-2 rounded-l-md bg-slate-600 text-amber-50 ${habitType == HabitType.Good ? "translate-y-[3px] shadow-[inset_0px_2px_gray]" : "hover:bg-slate-700 shadow-[0px_3px_gray]"}`}
-          onClick={() => {
-            if (habitType != HabitType.Good) {
-              setHabitType(HabitType.Good)
-            }
-          }}
-        >
-          Habits to form
-        </button>
-        {/*habits to discard button*/}
-        <button
-          className={`w-40 mr-auto p-2 rounded-r-md bg-yellow-500 text-amber-50 ${habitType == HabitType.Bad ? "translate-y-[3px] shadow-[inset_0px_2px_gray]" : "hover:bg-yellow-600 shadow-[0px_3px_gray]"}`}
-          onClick={() => {
-            if (habitType != HabitType.Bad) {
-              setHabitType(HabitType.Bad)
-            }
-          }}
-        >
-          Habits to discard
-        </button>
-        {/*new habit button*/}
-        <button
-          className="flex h-10 p-2 absolute right-8 rounded-md bg-pink-400 text-amber-50 shadow-[0px_3px_gray] active:translate-y-[3px] active:shadow-none"
+          className="h-10 p-2 ml-auto rounded-md bg-black text-amber-50 shadow-[0px_3px_gray] active:translate-y-[3px] active:shadow-none"
           onClick={toNewHabitPage}
         >
           New Habit
         </button>
       </div>
-
       {/*habit table*/}
-      <ul className="px-8 my-6">
-        {[1, 2, 3].map((index) => {
-          return (
-            <li className="mb-8" key={index}>
-              <HabitCard
-                habitID={index.toString()}
-                title="test"
-                habitType={habitType}
-                checkFrequency="daily"
-                checkDelayHour={0}
-                remainRetroactiveChance={1}
-                onEditHabit={toEditHabitPage}
-                onDeleteHabit={doDeleteHabit}
-              />
-            </li>
-          )
-        })}
-      </ul>
+      {habits.length > 0 ? (
+        <ul className="my-6">
+          {habits.map((value, index) => {
+            return (
+              <li className="mb-8" key={index}>
+                <HabitCard
+                  habit={value}
+                  startData={startDate}
+                  endDate={endDate}
+                  onEditHabit={toEditHabitPage}
+                  onDeleteHabit={() => {
+                    setDeletingHabitID(value.habit.id)
+                    setShowModal(true)
+                  }}
+                  onHabitLog={doHabitLog}
+                />
+              </li>
+            )
+          })}
+        </ul>
+      ) : (
+        <div className="flex h-1/2">
+          <div className="m-auto">No Habits, Create One</div>
+        </div>
+      )}
+
+      <span className="block text-right text-gray-500">
+        <span className="text-red-500">*</span> notice: all habits&apos; log deadline is next day 4:00 AM
+      </span>
+      <div className="w-full flex">
+        <div className="m-auto">
+          <Pagination
+            currentPage={page}
+            totalPage={Math.ceil(totalHabitNum / pageSize)}
+            toPreviousPage={() => {
+              if (page > 2) {
+                setPage(page - 1)
+              }
+            }}
+            toNextPage={() => {
+              if (page < Math.ceil(totalHabitNum / pageSize)) {
+                setPage(page + 1)
+              }
+            }}
+          />
+        </div>
+      </div>
     </div>
   )
 }
+
+export const getServerSideProps = CommonServerGetSideUserProp(false)

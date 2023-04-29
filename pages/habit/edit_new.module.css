@@ -1,0 +1,76 @@
+
+.editNewOutsideContainer {
+  @apply relative w-full px-36 py-6;
+}
+
+.editNewForm {
+  @apply w-full space-y-6;
+}
+
+.editNewBlurRing {
+  @apply ring-inset ring-2 ring-gray-200;
+}
+
+.editNewFocusRing {
+  @apply focus:outline-none focus:border-transparent focus:ring-inset focus:ring-2 focus:ring-gray-400;
+}
+
+.editNewTextInput {
+  @apply w-full h-[44px] rounded-lg border-transparent bg-transparent editNewBlurRing editNewFocusRing;
+}
+
+.editNewUserSearcher {
+  @apply w-full min-h-[44px] rounded-lg editNewBlurRing focus-within:ring-inset focus-within:ring-2 focus-within:ring-gray-400
+}
+
+.editNewUserSearcherInput {
+  @apply border-transparent bg-transparent focus:outline-none focus:border-transparent focus:ring-0;
+}
+
+.editNewWeekdayChooser {
+  @apply w-full rounded-lg p-2 editNewBlurRing;
+}
+
+.editNewColorPickerContainer {
+  @apply mb-4 w-7 h-7 rounded-full border-2 border-gray-200;
+}
+
+.editNewHeatmap {
+  @apply rounded-lg p-4 editNewBlurRing;
+}
+
+.editNewBtnContainer {
+  @apply flex justify-end mt-6 space-x-4;
+}
+
+.editNewCancelBtn {
+  @apply bg-gray-300 text-rose-500 w-24 h-10 rounded-lg;
+}
+
+.editNewConfirmBtn {
+  @apply bg-black text-white w-24 h-10 rounded-lg flex;
+}
+
+.editNewConfirmSpan {
+  @apply m-auto;
+}
+
+.editNewConfirmInProgressSpan {
+  @apply my-auto ml-1;
+}
+
+.editNewConfirmInProgressBtn {
+  @apply ml-4 bg-gray-500 text-white w-24 h-10 rounded-lg flex;
+}
+
+.editNewConfirmWaitIndicator {
+  @apply my-auto h-3/5 aspect-square ml-1;
+}
+
+.editNewSelect {
+  @apply h-[44px] rounded-lg text-slate-600 editNewBlurRing editNewFocusRing;
+}
+
+.editNewSelectOption {
+  @apply h-[44px] p-2;
+}

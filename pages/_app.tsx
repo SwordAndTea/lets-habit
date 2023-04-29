@@ -22,6 +22,5 @@ export default function App({Component, pageProps}: AppProps) {
     <Provider store={store}>
       {getLayout(<Component {...pageProps} />)}
     </Provider>
-
   )
 }

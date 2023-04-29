@@ -1,13 +1,7 @@
-import {useRouter} from "next/router";
-import {useEffect} from "react";
-import {RoutePath} from "../util/const";
+import {CommonServerGetSideUserProp} from "../util/user";
 
 export default function RootPage() {
-  const route = useRouter()
-
-  useEffect(()=> {
-    route.replace(RoutePath.HomePage)
-  })
-
   return <></>
 }
+
+export const getServerSideProps = CommonServerGetSideUserProp(true)
