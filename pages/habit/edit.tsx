@@ -251,7 +251,6 @@ export default function EditHabitPage(props: EditHabitPageProps) {
 }
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  console.log(parseInt(context.query[HabitIDURLParam] as string, 10))
   return await getHabit(parseInt(context.query[HabitIDURLParam] as string, 10), context.req.headers.cookie).then((resp) => {
     return {
       props: {

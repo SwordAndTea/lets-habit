@@ -1,4 +1,4 @@
-import {getUserInfo, userLoginByEmail, userRegisterByEmail} from "../api/user";
+import {userLoginByEmail, userRegisterByEmail} from "../api/user";
 import React, {useState} from "react";
 import {LayoutFooterOnly} from "../components/layout/layout";
 import {NextRouter, useRouter} from "next/router";
@@ -6,7 +6,7 @@ import {noti} from "../util/noti";
 import {SpinWaitIndicatorIcon, WeChatIcon} from "../components/icons";
 import {RoutePath} from "../util/const";
 import {AxiosResponse} from "axios";
-import {GetServerSideProps} from "next";
+import {CommonServerGetSideUserProp} from "../util/user";
 
 
 export default function Login() {
@@ -133,7 +133,6 @@ export default function Login() {
         </form>
 
 
-
         {/*sign in / sign up switch info*/}
         <p className="text-center text-sm text-gray-500">
           {isSignUp ? (
@@ -192,26 +191,4 @@ Login.getLayout = (page) => {
   return <LayoutFooterOnly>{page}</LayoutFooterOnly>
 }
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  return await getUserInfo(context.req.headers.cookie).then((resp) => {
-    if (resp.headers["set-cookie"]) {
-      context.res.setHeader('set-cookie', resp.headers["set-cookie"])
-    }
-    if (resp.data.data.user.user_register_type == "email" && !resp.data.data.user.email_active) {
-      return {
-        redirect: {
-          destination: RoutePath.EmailActivateSendPage,
-          permanent: false,
-        }
-      }
-    }
-    return {
-      redirect: {
-        destination: RoutePath.HomePage,
-        permanent: false,
-      }
-    }
-  }).catch(()=>{
-    return {props: {}}
-  })
-}
+export const getServerSideProps = CommonServerGetSideUserProp(true)

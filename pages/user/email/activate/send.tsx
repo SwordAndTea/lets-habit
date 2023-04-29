@@ -1,9 +1,9 @@
 import {useEffect, useState} from "react";
 import {useRouter} from "next/router";
-import {userEmailActivateResend} from "../../../../api/user";
+import {getUserInfo, userEmailActivateResend} from "../../../../api/user";
 import {EmailIcon} from "../../../../components/icons";
 import {RoutePath} from "../../../../util/const";
-import {GetLocalUserInfo} from "../../../../util/user";
+import {GetServerSideProps} from "next";
 
 
 export default function EmailActivateSendPage() {
@@ -14,30 +14,21 @@ export default function EmailActivateSendPage() {
   const [disableResend, setDisableResent] = useState(false)
 
   useEffect(()=>{
-    if (route.isReady) {
-      let user = GetLocalUserInfo()
-      if (user) {
-        if (user.user_register_type != "email" || user.email_active) {
-          route.push(RoutePath.HomePage)
-        }
-      }
-
-      let lastResendEmailTime = localStorage.getItem(lastResendEmailAtKey)
-      if (lastResendEmailTime) {
-        let current = new Date()
-        // @ts-ignore
-        let timeElapsed = Math.floor(current.getTime() / 1000) - lastResendEmailTime
-        if (timeElapsed < defaultResentWaitTime) {
-          setDisableResent(true)
-          setRetrySendWaiTime(defaultResentWaitTime - timeElapsed)
-          let timer = countDownForResend(defaultResentWaitTime - timeElapsed)
-          return ()=>{
-            clearInterval(timer)
-          }
+    let lastResendEmailTime = localStorage.getItem(lastResendEmailAtKey)
+    if (lastResendEmailTime) {
+      let current = new Date()
+      // @ts-ignore
+      let timeElapsed = Math.floor(current.getTime() / 1000) - lastResendEmailTime
+      if (timeElapsed < defaultResentWaitTime) {
+        setDisableResent(true)
+        setRetrySendWaiTime(defaultResentWaitTime - timeElapsed)
+        let timer = countDownForResend(defaultResentWaitTime - timeElapsed)
+        return ()=>{
+          clearInterval(timer)
         }
       }
     }
-  }, [route.isReady])
+  }, [])
 
   const countDownForResend = (t: number) => {
     let timer = setInterval(()=>{
@@ -81,4 +72,33 @@ export default function EmailActivateSendPage() {
       </button>
     </div>
   )
+}
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  return await getUserInfo(context.req.headers.cookie).then((resp) => {
+    if (resp.headers["set-cookie"]) {
+      context.res.setHeader('set-cookie', resp.headers["set-cookie"])
+    }
+
+    if (resp.data.data.user.user_register_type != "email" || resp.data.data.user.email_active) {
+      return {
+        redirect: {
+          destination: `${RoutePath.HomePage}?page=1`,
+          permanent: false,
+        }
+      }
+    }
+    return {
+      props: {
+        user: resp.data.data.user
+      }
+    }
+  }).catch(() => {
+    return {
+      redirect: {
+        destination: RoutePath.LoginPage,
+        permanent: false,
+      }
+    }
+  })
 }

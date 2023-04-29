@@ -3,8 +3,7 @@ import {useRouter} from "next/router";
 import {EditIcon, DeleteIcon, OptionsIcon, SpinWaitIndicatorIcon} from "../components/icons";
 import {HabitIDURLParam, RoutePath} from "../util/const";
 import {useDropdownHandleOutsideClick} from "../components/hooks";
-import {getUserInfo} from "../api/user";
-import {User} from "../util/user";
+import {CommonServerGetSideUserProp, User} from "../util/user";
 import {deleteHabit, listHabit, logHabit} from "../api/habit";
 import {DetailedHabit} from "../util/habit";
 import {Pagination} from "../components/pagination";
@@ -13,7 +12,6 @@ import {CalculatedStartDay, DateToRFC3339FormatString} from "../util/date";
 import {AvatarList} from "../components/avatar_list";
 import {Modal} from "../components/modal";
 import {noti} from "../util/noti";
-import {GetServerSideProps} from "next";
 
 
 interface HabitCardProps {
@@ -131,7 +129,6 @@ interface HomePageProps {
 }
 
 export default function Home(props: HomePageProps) {
-  console.log("home page props:", props)
   const route = useRouter()
   const pageSize = 5
   const endDate = new Date()
@@ -311,30 +308,4 @@ export default function Home(props: HomePageProps) {
   )
 }
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  return await getUserInfo(context.req.headers.cookie).then((resp) => {
-    if (resp.headers["set-cookie"]) {
-      context.res.setHeader('set-cookie', resp.headers["set-cookie"])
-    }
-    if (resp.data.data.user.user_register_type == "email" && !resp.data.data.user.email_active) {
-      return {
-        redirect: {
-          destination: RoutePath.EmailActivateSendPage,
-          permanent: false,
-        }
-      }
-    }
-    return {
-      props: {
-        user: resp.data.data.user
-      }
-    }
-  }).catch(() => {
-    return {
-      redirect: {
-        destination: RoutePath.LoginPage,
-        permanent: false,
-      }
-    }
-  })
-}
+export const getServerSideProps = CommonServerGetSideUserProp(false)

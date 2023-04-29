@@ -1,21 +1,24 @@
 import styles from './edit_new.module.css'
 import {UserSearcher} from "../../components/search";
-import React, {useEffect, useState} from "react";
+import React, {useState} from "react";
 import {useRouter} from "next/router";
 import {SpinWaitIndicatorIcon} from "../../components/icons";
 import Heatmap from "../../components/heatmap";
-import {GetLocalUserInfo, SimplifiedUser} from "../../util/user";
+import {CommonServerGetSideUserProp, SimplifiedUser, User} from "../../util/user";
 import {createHabit} from "../../api/habit";
 import {Weekday} from "../../util/habit";
 import {WeekdayChooser} from "../../components/weekday_chooser";
 import {CalculatedStartDay} from "../../util/date";
 import {HabitInfoItemWrap} from "../../components/habit_new_edit_shared";
 
+interface NewHabitPageProps {
+  user: User
+}
 
-export default function NewHabitPage() {
+export default function NewHabitPage(props: NewHabitPageProps) {
   const route = useRouter()
 
-  const [fixUsers, setFixedUsers] = useState<SimplifiedUser[]>([])
+  const fixUsers = [props.user]
 
   const [isCreating, setIsCreating] = useState(false)
   const [habitName, setHabitName] = useState("")
@@ -27,13 +30,6 @@ export default function NewHabitPage() {
 
   let heatmapEndDate = new Date()
   let heatmapStartDate = CalculatedStartDay()
-
-  useEffect(() => {
-    let userInfo = GetLocalUserInfo()
-    if (userInfo) {
-      setFixedUsers([userInfo])
-    }
-  }, [])
 
   const handleCreate = () => {
     setIsCreating(true)
@@ -134,3 +130,5 @@ export default function NewHabitPage() {
     </div>
   )
 }
+
+export const getServerSideProps = CommonServerGetSideUserProp(false)
