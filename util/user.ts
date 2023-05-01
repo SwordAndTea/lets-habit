@@ -71,3 +71,7 @@ export const CommonServerGetSideUserProp = (toHomePage: boolean): GetServerSideP
     })
   }
 }
+
+export interface PageUserProp {
+  user: User
+}

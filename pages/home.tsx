@@ -3,7 +3,7 @@ import {useRouter} from "next/router";
 import {EditIcon, DeleteIcon, OptionsIcon, SpinWaitIndicatorIcon} from "../components/icons";
 import {HabitIDURLParam, RoutePath} from "../util/const";
 import {useDropdownHandleOutsideClick} from "../components/hooks";
-import {CommonServerGetSideUserProp, User} from "../util/user";
+import {CommonServerGetSideUserProp, PageUserProp} from "../util/user";
 import {deleteHabit, listHabit, logHabit} from "../api/habit";
 import {DetailedHabit} from "../util/habit";
 import {Pagination} from "../components/pagination";
@@ -123,12 +123,7 @@ function HabitCard(props: HabitCardProps) {
   )
 }
 
-
-interface HomePageProps {
-  user: User
-}
-
-export default function Home(props: HomePageProps) {
+export default function Home(props: PageUserProp) {
   const route = useRouter()
   const pageSize = 5
   const endDate = new Date()

@@ -18,7 +18,7 @@ interface NewHabitPageProps {
 export default function NewHabitPage(props: NewHabitPageProps) {
   const route = useRouter()
 
-  const fixUsers = [props.user]
+  const [fixUsers, ] = useState([props.user])
 
   const [isCreating, setIsCreating] = useState(false)
   const [habitName, setHabitName] = useState("")

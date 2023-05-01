@@ -8,6 +8,7 @@ import {GetEventPath} from "../util/event";
 import {SimplifiedUser} from "../util/user";
 import {PopViewDisplayType, PopViewDisplayTypeFloat} from "./common";
 import Image from "next/image";
+import {UserDetailCard} from "./user_detail_card";
 
 
 interface UserItemProps {
@@ -41,26 +42,31 @@ interface UserCardProps extends UserItemProps {
 }
 
 function UserCard(props: UserCardProps) {
-
   return (
-    <div className="relative flex m-1 mr-0 border min-w-[120px] max-w-[200px] bg-gray-300 rounded hover-show-parent">
-      {/*portrait*/}
-      <div className="h-5/6 aspect-square rounded-full border-2 border-black ml-2 mr-1 my-auto overflow-hidden">
-        {props.user.portrait ? <img src={props.user.portrait} alt="user-portrait"/> : <DefaultUserPortraitIcon/>}
-      </div>
-      <span
-        className="my-auto mr-2 flex-1 text-ellipsis overflow-hidden">{props.user.name ? props.user.name : AnonymousUsername}</span>
-
-      {/*delete btn*/}
-      {!props.cannotDelete && (
-        <button
-          className="absolute top-0 right-0 rounded-full bg-black hover-show-child"
-          onClick={props.onDelete}
+    <UserDetailCard user={props.user} presentStyle="hover" childrenContainerClassName="h-full py-1 pl-1">
+      <div className="relative flex border min-w-[140px] h-full max-w-[200px] bg-gray-300 rounded">
+        {/*portrait*/}
+        <div className="h-5/6 aspect-square rounded-full border-2 border-black ml-2 mr-1 my-auto overflow-hidden">
+          {props.user.portrait ? <img src={props.user.portrait} alt="user-portrait"/> : <DefaultUserPortraitIcon/>}
+        </div>
+        <span
+          className="my-auto mr-2 flex-1 text-ellipsis overflow-hidden"
         >
-          <PlusIcon fill="gray" className="rotate-45 w-3 h-3"/>
-        </button>
-      )}
-    </div>
+          {props.user.name ? props.user.name : AnonymousUsername}
+        </span>
+
+        {/*delete btn*/}
+        {!props.cannotDelete && (
+          <button
+            className="absolute top-0 right-0 rounded-full bg-black hover-show-child"
+            onClick={props.onDelete}
+          >
+            <PlusIcon fill="gray" className="rotate-45 w-3 h-3"/>
+          </button>
+        )}
+      </div>
+    </UserDetailCard>
+
   )
 }
 
@@ -193,7 +199,7 @@ export function UserSearcher(props: UserSearcherProps) {
             <UserCard
               key={index}
               user={value}
-              onDelete={(e) => {
+              onDelete={() => {
                 let newUserList = selectedUsers.filter(a => a.uid != value.uid)
                 setSelectedUsers(newUserList)
                 if (onSelectUserChange) {
