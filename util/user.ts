@@ -1,6 +1,7 @@
-import {RoutePath, UserLocalStorageKey} from "./const";
+import {RoutePath} from "./const";
 import {GetServerSideProps,} from "next";
 import {getUserInfo} from "../api/user";
+import store, {userSlice} from "./store";
 
 export interface User {
   uid: string
@@ -26,15 +27,7 @@ export interface SimplifiedUser {
   portrait: string | null
 }
 
-export function GetLocalUserInfo(): User | null {
-  let userInfo = localStorage.getItem(UserLocalStorageKey)
-  if (userInfo) {
-    return JSON.parse(userInfo)
-  }
-  return null
-}
-
-export const CommonServerGetSideUserProp = (toHomePage: boolean): GetServerSideProps => {
+export const CommonServerGetSideUserProp = (toHomePage: boolean, toLoginPage: boolean): GetServerSideProps => {
   return async (context) => {
     return await getUserInfo(context.req.headers.cookie).then((resp) => {
       if (resp.headers["set-cookie"]) {
@@ -62,14 +55,24 @@ export const CommonServerGetSideUserProp = (toHomePage: boolean): GetServerSideP
         }
       }
     }).catch(() => {
-      return {
-        redirect: {
-          destination: RoutePath.LoginPage,
-          permanent: false,
+      if (toLoginPage) {
+        return {
+          redirect: {
+            destination: RoutePath.LoginPage,
+            permanent: false,
+          }
         }
+      }
+
+      return {
+        props: {}
       }
     })
   }
+}
+
+export function setUserStore(user: User) {
+  store.dispatch(userSlice.actions.set(user))
 }
 
 export interface PageUserProp {

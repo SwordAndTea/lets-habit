@@ -1,28 +1,31 @@
 import React from "react";
-import {PlusIcon} from "./icons";
 
 interface ModalProps extends React.HtmlHTMLAttributes<HTMLDivElement> {
   maskClassName?: string
   containerClassName?: string
-  closable?: boolean
-  onClose?: () => void
-  clickMask?: () => void
+  onCancel?: () => void
+  cancelBtnStyle?: "primary" | "alter"
+  onConfirm?: () => void
+  confirmBtnStyle?: "primary" | "alter"
+  onMaskClick?: () => void
 }
 
 export function Modal(props: ModalProps) {
   const {
     maskClassName,
     containerClassName,
-    closable,
-    onClose,
-    clickMask,
+    onCancel,
+    cancelBtnStyle,
+    onConfirm,
+    confirmBtnStyle,
+    onMaskClick,
     ...otherProps
   } = props
 
   let finalClickMaskHandler = (e: React.MouseEvent) => {
     e.stopPropagation()
-    if (clickMask) {
-      clickMask()
+    if (onMaskClick) {
+      onMaskClick()
     }
   }
 
@@ -36,12 +39,30 @@ export function Modal(props: ModalProps) {
       {/*container*/}
       <div
         className={`relative m-auto flex flex-col p-4 rounded-xl bg-white overflow-hidden animate-pop-in ${containerClassName}`}>
-        {closable && (
-          <button className="absolute top-1 right-1 w-4 h-4 rounded-full bg-gray-300 flex" onClick={onClose}>
-            <PlusIcon fill="gray" className="m-auto rotate-45 w-3 h-3"/>
-          </button>
-        )}
+        {/*{closable && (*/}
+        {/*  <button className="absolute top-1 right-1 w-4 h-4 rounded-full bg-gray-300 flex" onClick={onClose}>*/}
+        {/*    <PlusIcon fill="gray" className="m-auto rotate-45 w-3 h-3"/>*/}
+        {/*  </button>*/}
+        {/*)}*/}
         {props.children}
+        <div className="flex justify-end space-x-3 mt-4">
+          {onCancel && (
+            <button
+              className={cancelBtnStyle == "alter" ? "alter-btn" : "primary-btn"}
+              onClick={onCancel}
+            >
+              Cancel
+            </button>
+          )}
+          {onConfirm && (
+            <button
+              className={confirmBtnStyle == "alter" ? "alter-btn" : "primary-btn"}
+              onClick={onConfirm}
+            >
+              Confirm
+            </button>
+          )}
+        </div>
       </div>
     </div>
   )

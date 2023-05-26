@@ -25,3 +25,12 @@ export const userEmailActivate = async (activeCode: string) => {
 export const userSearch = async (text: string) => {
   return reqHandler.post(`${apiV1}/user/search`, {name_or_uid: text})
 }
+
+interface UpdateUserBaseInfoReq {
+  name: string
+  portrait: string
+}
+
+export const updateUserBaseInfo = async (req: UpdateUserBaseInfoReq) => {
+  return reqHandler.put(`${apiV1}/user/base`, req)
+}

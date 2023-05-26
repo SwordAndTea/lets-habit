@@ -8,7 +8,7 @@ import Heatmap from "../../components/heatmap";
 import {CalculatedStartDay} from "../../util/date";
 import {useRouter} from "next/router";
 import {HabitInfoItemWrap} from "../../components/habit_new_edit_shared";
-import {GetLocalUserInfo, SimplifiedUser} from "../../util/user";
+import {CommonServerGetSideUserProp, PageUserProp, setUserStore, SimplifiedUser} from "../../util/user";
 import {
   getHabit,
   updateHabit,
@@ -19,7 +19,7 @@ import {noti} from "../../util/noti";
 import {SpinWaitIndicatorIcon} from "../../components/icons";
 import {GetServerSideProps} from "next";
 
-interface EditHabitPageProps {
+interface EditHabitPageProps extends PageUserProp {
   habit: DetailedHabit | null
 }
 
@@ -41,19 +41,17 @@ export default function EditHabitPage(props: EditHabitPageProps) {
   let heatmapStartDate = CalculatedStartDay()
 
   useEffect(() => {
+    setUserStore(props.user)
     let habitInfo = props.habit
     if (habitInfo) {
-      let userInfo = GetLocalUserInfo()
       setHabit(habitInfo)
       setHabitName(habitInfo.habit.name)
       setIdentity(habitInfo.habit.identity ? habitInfo.habit.identity : "")
       setCooperators(habitInfo.cooperators)
       setHeatmapColor(habitInfo.user_custom_config.heatmap_color)
-      if (userInfo) {
-        setCurUser(userInfo)
-        if (habitInfo.habit.owner == userInfo.uid) {
-          setIsHabitOwner(true)
-        }
+      setCurUser(props.user)
+      if (habitInfo.habit.owner == props.user.uid) {
+        setIsHabitOwner(true)
       }
       if (colorPickerRef.current) {
         // @ts-ignore
@@ -251,9 +249,15 @@ export default function EditHabitPage(props: EditHabitPageProps) {
 }
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
+  let info = await CommonServerGetSideUserProp(false, true)(context) as any
+  if (info.redirect) {
+    return info
+  }
+
   return await getHabit(parseInt(context.query[HabitIDURLParam] as string, 10), context.req.headers.cookie).then((resp) => {
     return {
       props: {
+        user: info.props.user,
         habit: resp.data.data.habit
       }
     }

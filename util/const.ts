@@ -6,11 +6,10 @@ export enum RoutePath {
   HomePage = "/home",
   NewHabitPage = "/habit/new",
   EditHabitPage = "/habit/edit",
+  UserSettingPage = "/user/setting"
 }
 
 export const EmailActivateActivateCodeParam = "code"
-
-export const UserLocalStorageKey = "user"
 
 export const HabitIDURLParam = "habit-id"
 

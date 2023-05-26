@@ -39,7 +39,7 @@ export function UserDetailCard(props: UserDetailCardProps) {
         <div className="absolute flex z-10 bottom-full -translate-y-2 right-0 w-68 h-24 border-2 bg-white rounded-lg"
              ref={cardRef}>
           <div
-            className={"my-auto ml-2 mr-1 h-14 aspect-square z-20 rounded-full bg-blue-400 overflow-hidden border-2"}>
+            className="relative my-auto ml-2 mr-1 h-14 aspect-square z-20 rounded-full bg-blue-400 overflow-hidden border-2">
             {props.user.portrait ?
               <Image alt={props.user.uid} src={props.user.portrait} className="object-contain" fill/> :
               <DefaultUserPortraitIcon className="bg-white"/>}

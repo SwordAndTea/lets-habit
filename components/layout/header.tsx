@@ -1,25 +1,15 @@
-import {useRouter} from "next/router";
-import {RoutePath} from "../../util/const";
-import {useEffect, useState} from "react";
-import {GetLocalUserInfo, InitialUser, User} from "../../util/user";
+import {AnonymousUsername, RoutePath} from "../../util/const";
 import {useDropdownHandleOutsideClick} from "../hooks";
 import {DefaultUserPortraitIcon} from "../icons";
 import Image from "next/image";
+import {useRouter} from "next/router";
+import {useSelector} from "react-redux";
+import {RootState} from "../../util/store";
 
 function Header() {
   const route = useRouter()
-  const [userInfo, setUserInfo] = useState<User>(InitialUser);
+  const user = useSelector((state: RootState) => state.user.user)
   const [showOptionList, setShowOptionList, btnRef, optionListRef] = useDropdownHandleOutsideClick()
-
-  useEffect(() => {
-    if (route.isReady) {
-      let user = GetLocalUserInfo()
-      if (user) {
-        setUserInfo(user)
-      }
-    }
-  }, [route.isReady]);
-
 
   return (
     <header className="flex bg-black pb-1 pt-1 shadow-lg">
@@ -37,15 +27,15 @@ function Header() {
       </button>
 
       {/*user portrait*/}
-      <div className="w-10 h-10 ml-auto mr-6 my-2 relative">
+      <div className="relative w-10 h-10 ml-auto mr-6 my-2">
         <button
-          className="w-10 h-10 rounded-full border-2 border-white overflow-hidden"
+          className="relative w-10 h-10 rounded-full border-2 border-white overflow-hidden"
           ref={btnRef}
           onClick={() => {
             setShowOptionList(!showOptionList)
           }}
         >
-          {userInfo.portrait ? <Image src={userInfo.portrait} alt="user-portrait" fill/> :
+          {user.portrait ? <Image src={user.portrait} alt="user-portrait" fill/> :
             <DefaultUserPortraitIcon fill="white"/>}
         </button>
         {showOptionList && (
@@ -55,14 +45,14 @@ function Header() {
           >
             <li>
               <h1 className="text-amber-50 text-xl">
-                {userInfo.name ? userInfo.name : "unknown"}
+                {user.name ? user.name : AnonymousUsername}
               </h1>
             </li>
             <li>
               <button
                 onClick={() => {
                   setShowOptionList(false)
-                  route.push("/user/setting")
+                  route.push(RoutePath.UserSettingPage)
                 }}
               >
                 setting

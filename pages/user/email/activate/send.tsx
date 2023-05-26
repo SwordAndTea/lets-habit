@@ -4,9 +4,10 @@ import {getUserInfo, userEmailActivateResend} from "../../../../api/user";
 import {EmailIcon} from "../../../../components/icons";
 import {RoutePath} from "../../../../util/const";
 import {GetServerSideProps} from "next";
+import {PageUserProp, setUserStore} from "../../../../util/user";
 
 
-export default function EmailActivateSendPage() {
+export default function EmailActivateSendPage(props: PageUserProp) {
   const route = useRouter()
   const lastResendEmailAtKey = "last-resend-email-at"
   const defaultResentWaitTime = 5
@@ -14,6 +15,7 @@ export default function EmailActivateSendPage() {
   const [disableResend, setDisableResent] = useState(false)
 
   useEffect(()=>{
+    setUserStore(props.user)
     let lastResendEmailTime = localStorage.getItem(lastResendEmailAtKey)
     if (lastResendEmailTime) {
       let current = new Date()

@@ -20,8 +20,10 @@ function UserItem(props: UserItemProps) {
   return (
     <div className="flex w-full h-full">
       {/*portrait*/}
-      <div className="h-5/6 aspect-square rounded-full border-2 border-black mx-2 my-auto overflow-hidden">
-        {props.user.portrait ? <Image src={props.user.portrait} alt="user-portrait" fill/> : <DefaultUserPortraitIcon/>}
+      <div className="relative h-5/6 aspect-square rounded-full border-2 border-white mx-2 my-auto overflow-hidden">
+        {props.user.portrait ?
+          <Image src={props.user.portrait} alt="user-portrait" className="object-contain" fill/> :
+          <DefaultUserPortraitIcon/>}
       </div>
       {/*name and uid*/}
       <div className="flex-1 mr-2 h-full">
@@ -30,7 +32,7 @@ function UserItem(props: UserItemProps) {
       </div>
       {/*selected indicator*/}
       {props.selected && (
-        <SquareCheckIcon className="mr-2 my-auto h-1/2 aspect-square"/>
+        <SquareCheckIcon className="mr-2 my-auto h-1/2 aspect-square fill-rose-300"/>
       )}
     </div>
   )
@@ -44,11 +46,14 @@ interface UserCardProps extends UserItemProps {
 function UserCard(props: UserCardProps) {
   return (
     <UserDetailCard user={props.user} presentStyle="hover" childrenContainerClassName="h-full py-1 pl-1">
-      <div className="relative flex border min-w-[140px] h-full max-w-[200px] bg-gray-300 rounded">
+      <div className="relative flex border min-w-[140px] h-full max-w-[200px] bg-gray-300 rounded hover-show-parent">
         {/*portrait*/}
-        <div className="h-5/6 aspect-square rounded-full border-2 border-black ml-2 mr-1 my-auto overflow-hidden">
-          {props.user.portrait ? <img src={props.user.portrait} alt="user-portrait"/> : <DefaultUserPortraitIcon/>}
+        <div className="relative h-5/6 aspect-square rounded-full border-2 border-white ml-2 mr-1 my-auto overflow-hidden">
+          {props.user.portrait ?
+            <Image src={props.user.portrait} alt="user-portrait" className="object-contain" fill/> :
+            <DefaultUserPortraitIcon/>}
         </div>
+        {/*username*/}
         <span
           className="my-auto mr-2 flex-1 text-ellipsis overflow-hidden"
         >
@@ -58,10 +63,10 @@ function UserCard(props: UserCardProps) {
         {/*delete btn*/}
         {!props.cannotDelete && (
           <button
-            className="absolute top-0 right-0 rounded-full bg-black hover-show-child"
+            className="absolute top-0.5 right-0.5 rounded-full bg-black hover-show-child"
             onClick={props.onDelete}
           >
-            <PlusIcon fill="gray" className="rotate-45 w-3 h-3"/>
+            <PlusIcon fill="gray" className="rotate-45 w-2.5 h-2.5"/>
           </button>
         )}
       </div>
@@ -95,7 +100,7 @@ function mergeUsers(lUserGroup: SimplifiedUser[] | undefined | null, rUserGroup:
       return rUserGroup
     }
     let filteredUsers = rUserGroup.filter((currentItem1) => {
-      return  finalUsers.findIndex((currentItem2) => {
+      return finalUsers.findIndex((currentItem2) => {
         return currentItem1.uid == currentItem2.uid
       }) == -1
     })
@@ -117,7 +122,7 @@ export function UserSearcher(props: UserSearcherProps) {
 
   const [selectedUsers, setSelectedUsers] = useState<SimplifiedUser[]>([])
 
-  useEffect(()=>{
+  useEffect(() => {
     setSelectedUsers(mergeUsers(fixedUsers, defaultUsers))
   }, [fixedUsers, defaultUsers])
 

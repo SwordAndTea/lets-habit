@@ -1,10 +1,10 @@
 import styles from './edit_new.module.css'
 import {UserSearcher} from "../../components/search";
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {useRouter} from "next/router";
 import {SpinWaitIndicatorIcon} from "../../components/icons";
 import Heatmap from "../../components/heatmap";
-import {CommonServerGetSideUserProp, SimplifiedUser, User} from "../../util/user";
+import {CommonServerGetSideUserProp, setUserStore, SimplifiedUser, User} from "../../util/user";
 import {createHabit} from "../../api/habit";
 import {Weekday} from "../../util/habit";
 import {WeekdayChooser} from "../../components/weekday_chooser";
@@ -30,6 +30,10 @@ export default function NewHabitPage(props: NewHabitPageProps) {
 
   let heatmapEndDate = new Date()
   let heatmapStartDate = CalculatedStartDay()
+
+  useEffect(()=>{
+    setUserStore(props.user)
+  }, [])
 
   const handleCreate = () => {
     setIsCreating(true)
@@ -131,4 +135,4 @@ export default function NewHabitPage(props: NewHabitPageProps) {
   )
 }
 
-export const getServerSideProps = CommonServerGetSideUserProp(false)
+export const getServerSideProps = CommonServerGetSideUserProp(false, true)

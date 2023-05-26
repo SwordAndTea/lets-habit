@@ -191,4 +191,4 @@ Login.getLayout = (page) => {
   return <LayoutFooterOnly>{page}</LayoutFooterOnly>
 }
 
-export const getServerSideProps = CommonServerGetSideUserProp(true)
+export const getServerSideProps = CommonServerGetSideUserProp(true, false)

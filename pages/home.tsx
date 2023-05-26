@@ -3,7 +3,7 @@ import {useRouter} from "next/router";
 import {EditIcon, DeleteIcon, OptionsIcon, SpinWaitIndicatorIcon} from "../components/icons";
 import {HabitIDURLParam, RoutePath} from "../util/const";
 import {useDropdownHandleOutsideClick} from "../components/hooks";
-import {CommonServerGetSideUserProp, PageUserProp} from "../util/user";
+import {CommonServerGetSideUserProp, PageUserProp, setUserStore} from "../util/user";
 import {deleteHabit, listHabit, logHabit} from "../api/habit";
 import {DetailedHabit} from "../util/habit";
 import {Pagination} from "../components/pagination";
@@ -138,6 +138,7 @@ export default function Home(props: PageUserProp) {
   const [isDeleting, setIsDeleting] = useState(false)
 
   useEffect(() => {
+    setUserStore(props.user)
     doFetchHabit()
   }, [])
 
@@ -157,12 +158,11 @@ export default function Home(props: PageUserProp) {
   }
 
   const toEditHabitPage = (habit: DetailedHabit) => {
-    let query = {}
-    // @ts-ignore
-    query[HabitIDURLParam] = habit.habit.id
     route.push({
       pathname: RoutePath.EditHabitPage,
-      query: query
+      query: {
+        [HabitIDURLParam]: habit.habit.id
+      }
     })
   }
 
@@ -213,94 +213,88 @@ export default function Home(props: PageUserProp) {
   }
 
   return (
-    <div className="w-full py-4 px-52 space-y-8">
+    <div className="w-full py-4 px-52">
       {/*modal*/}
       {showModel && (
-        <Modal closable={!isDeleting} onClose={() => {
-          setShowModal(false)
-        }}>
+        <Modal
+          onCancel={!isDeleting ? ()=>{setShowModal(false)} : undefined}
+          onConfirm={!isDeleting ? () => {doDeleteHabit(deletingHabitID)}: undefined}
+          confirmBtnStyle="alter"
+        >
           {isDeleting ? (
             <div>
               <SpinWaitIndicatorIcon/>
               <p className="text-rose-300">deleting</p>
             </div>
           ) : (
-            <div className="space-y-6 mt-2">
-              <p>are you sure to delete this habit</p>
-              <div className="space-x-1 flex justify-end">
-                <button
-                  className="bg-gray-200 text-rose-500 w-20 py-1 rounded-lg"
-                  onClick={() => {
-                    doDeleteHabit(deletingHabitID)
-                  }}
-                >
-                  confirm
-                </button>
-              </div>
-
+            <div className="px-2">
+              <p className="max-w-sm">the deleted habit can not be restored, are you sure to delete this habit</p>
             </div>
           )}
         </Modal>
       )}
-      {/*new habit btn*/}
-      <div className="flex">
-        <button
-          className="h-10 p-2 ml-auto rounded-md bg-black text-amber-50 shadow-[0px_3px_gray] active:translate-y-[3px] active:shadow-none"
-          onClick={toNewHabitPage}
-        >
-          New Habit
-        </button>
-      </div>
-      {/*habit table*/}
-      {habits.length > 0 ? (
-        <ul className="my-6">
-          {habits.map((value, index) => {
-            return (
-              <li className="mb-8" key={index}>
-                <HabitCard
-                  habit={value}
-                  startData={startDate}
-                  endDate={endDate}
-                  onEditHabit={toEditHabitPage}
-                  onDeleteHabit={() => {
-                    setDeletingHabitID(value.habit.id)
-                    setShowModal(true)
-                  }}
-                  onHabitLog={doHabitLog}
-                />
-              </li>
-            )
-          })}
-        </ul>
-      ) : (
-        <div className="flex h-1/2">
-          <div className="m-auto">No Habits, Create One</div>
+      <div className="w-full space-y-8">
+        <div className="flex">
+          <button
+            className="h-10 p-2 ml-auto rounded-md bg-black text-amber-50 shadow-[0px_3px_gray] active:translate-y-[3px] active:shadow-none"
+            onClick={toNewHabitPage}
+          >
+            New Habit
+          </button>
         </div>
-      )}
+        {/*habit table*/}
+        {habits.length > 0 ? (
+          <ul className="my-6">
+            {habits.map((value, index) => {
+              return (
+                <li className="mb-8" key={index}>
+                  <HabitCard
+                    habit={value}
+                    startData={startDate}
+                    endDate={endDate}
+                    onEditHabit={toEditHabitPage}
+                    onDeleteHabit={() => {
+                      setDeletingHabitID(value.habit.id)
+                      setShowModal(true)
+                    }}
+                    onHabitLog={doHabitLog}
+                  />
+                </li>
+              )
+            })}
+          </ul>
+        ) : (
+          <div className="flex h-1/2">
+            <div className="m-auto">No Habits, Create One</div>
+          </div>
+        )}
 
-      <span className="block text-right text-gray-500">
+        <span className="block text-right text-gray-500">
         <span className="text-red-500">*</span> notice: all habits&apos; log deadline is next day 4:00 AM
       </span>
-      <div className="w-full flex">
-        <div className="m-auto">
-          <Pagination
-            currentPage={page}
-            totalPage={Math.ceil(totalHabitNum / pageSize)}
-            toPreviousPage={() => {
-              if (page > 2) {
-                setPage(page - 1)
-              }
-            }}
-            toNextPage={() => {
-              if (page < Math.ceil(totalHabitNum / pageSize)) {
-                setPage(page + 1)
-              }
-            }}
-          />
+        <div className="w-full flex">
+          <div className="m-auto">
+            <Pagination
+              currentPage={page}
+              totalPage={Math.ceil(totalHabitNum / pageSize)}
+              toPreviousPage={() => {
+                if (page > 2) {
+                  setPage(page - 1)
+                }
+              }}
+              toNextPage={() => {
+                if (page < Math.ceil(totalHabitNum / pageSize)) {
+                  setPage(page + 1)
+                }
+              }}
+            />
+          </div>
         </div>
       </div>
+      {/*new habit btn*/}
+
     </div>
   )
 }
 
-export const getServerSideProps = CommonServerGetSideUserProp(false)
+export const getServerSideProps = CommonServerGetSideUserProp(false, true)
