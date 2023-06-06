@@ -1,12 +1,13 @@
 import React from "react";
+import {SpinWaitIndicatorIcon} from "./icons";
 
 interface ModalProps extends React.HtmlHTMLAttributes<HTMLDivElement> {
   maskClassName?: string
   containerClassName?: string
   onCancel?: () => void
-  cancelBtnStyle?: "primary" | "alter"
+  cancelBtnStyle?: "primary" | "alter" | "waiting"
   onConfirm?: () => void
-  confirmBtnStyle?: "primary" | "alter"
+  confirmBtnStyle?: "primary" | "alter" | "waiting"
   onMaskClick?: () => void
 }
 
@@ -39,27 +40,26 @@ export function Modal(props: ModalProps) {
       {/*container*/}
       <div
         className={`relative m-auto flex flex-col p-4 rounded-xl bg-white overflow-hidden animate-pop-in ${containerClassName}`}>
-        {/*{closable && (*/}
-        {/*  <button className="absolute top-1 right-1 w-4 h-4 rounded-full bg-gray-300 flex" onClick={onClose}>*/}
-        {/*    <PlusIcon fill="gray" className="m-auto rotate-45 w-3 h-3"/>*/}
-        {/*  </button>*/}
-        {/*)}*/}
         {props.children}
         <div className="flex justify-end space-x-3 mt-4">
           {onCancel && (
             <button
-              className={cancelBtnStyle == "alter" ? "alter-btn" : "primary-btn"}
+              className={cancelBtnStyle == "alter" ? "alter-btn w-24 h-10" : (cancelBtnStyle == "waiting" ? "wait-btn w-24 h-10" : "primary-btn w-24 h-10")}
               onClick={onCancel}
+              disabled={cancelBtnStyle == "waiting"}
             >
-              Cancel
+              {cancelBtnStyle == "waiting" && <SpinWaitIndicatorIcon className="wait-btn-indicator"/>}
+              <span>Cancel</span>
             </button>
           )}
           {onConfirm && (
             <button
-              className={confirmBtnStyle == "alter" ? "alter-btn" : "primary-btn"}
+              className={confirmBtnStyle == "alter" ? "alter-btn w-24 h-10" : (confirmBtnStyle == "waiting" ? "wait-btn w-24 h-10" : "primary-btn w-24 h-10")}
               onClick={onConfirm}
+              disabled={confirmBtnStyle == "waiting"}
             >
-              Confirm
+              {confirmBtnStyle == "waiting" && <SpinWaitIndicatorIcon className="wait-btn-indicator"/>}
+              <span>Confirm</span>
             </button>
           )}
         </div>

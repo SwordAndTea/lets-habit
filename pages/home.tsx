@@ -265,7 +265,7 @@ export default function Home(props: PageUserProp) {
           </ul>
         ) : (
           <div className="flex h-1/2">
-            <div className="m-auto">No Habits, Create One</div>
+            <div className="m-auto text-rose-500">No Habits, Create One</div>
           </div>
         )}
 

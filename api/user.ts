@@ -1,4 +1,5 @@
 import {apiV1, reqHandler} from "./base";
+import exp from "constants";
 
 export const getUserInfo = async (extraCookie?: string) => {
   return reqHandler.get(`${apiV1}/user`, {
@@ -33,4 +34,8 @@ interface UpdateUserBaseInfoReq {
 
 export const updateUserBaseInfo = async (req: UpdateUserBaseInfoReq) => {
   return reqHandler.put(`${apiV1}/user/base`, req)
+}
+
+export const deleteUser = async () => {
+  return reqHandler.delete(`${apiV1}/user`)
 }

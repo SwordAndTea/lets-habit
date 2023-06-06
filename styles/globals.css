@@ -54,9 +54,21 @@ input:-webkit-autofill:focus {
 }
 
 .primary-btn {
-  @apply bg-black text-white w-24 py-1 rounded-lg;
+  @apply bg-black text-white rounded-lg;
 }
 
 .alter-btn {
-  @apply bg-gray-300 text-rose-500 w-24 h-10 rounded-lg;
+  @apply bg-gray-300 text-rose-500 rounded-lg;
+}
+
+.wait-btn {
+  @apply bg-gray-500 text-white rounded-lg flex justify-center items-center space-x-1;
+}
+
+.wait-btn .wait-btn-indicator {
+  @apply my-auto h-3/5 aspect-square ml-1;
+}
+
+.common-input {
+  @apply w-full h-[44px] rounded-lg border-transparent ring-inset ring-2 ring-gray-200 focus:outline-none focus:border-transparent focus:ring-inset focus:ring-2 focus:ring-gray-400;
 }
