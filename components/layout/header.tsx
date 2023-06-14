@@ -5,6 +5,7 @@ import Image from "next/image";
 import {useRouter} from "next/router";
 import {useSelector} from "react-redux";
 import {RootState} from "../../util/store";
+import {signOut} from "../../api/user";
 
 function Header() {
   const route = useRouter()
@@ -55,7 +56,18 @@ function Header() {
                   route.push(RoutePath.UserSettingPage)
                 }}
               >
-                setting
+                Setting
+              </button>
+            </li>
+            <li>
+              <button
+                onClick={()=>{
+                  signOut().then(()=>{
+                    route.replace(RoutePath.LoginPage)
+                  })
+                }}
+              >
+                Sign Out
               </button>
             </li>
           </ul>

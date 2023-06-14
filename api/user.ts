@@ -36,6 +36,22 @@ export const updateUserBaseInfo = async (req: UpdateUserBaseInfoReq) => {
   return reqHandler.put(`${apiV1}/user/base`, req)
 }
 
+export const sendResetPasswordVerifyCode = async (email: string) => {
+  return reqHandler.post(`${apiV1}/user/password/reset/send-verify-code`, {email: email})
+}
+
+export const resetPassword = async (email: string, verifyCode: string, newPassword: string) => {
+  return reqHandler.post(`${apiV1}/user/password/reset`, {
+    email: email,
+    code: verifyCode,
+    new_password: newPassword,
+  })
+}
+
+export const signOut = async () => {
+  return reqHandler.post(`${apiV1}/user/sign-out`)
+}
+
 export const deleteUser = async () => {
   return reqHandler.delete(`${apiV1}/user`)
 }

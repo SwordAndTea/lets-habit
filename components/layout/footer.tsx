@@ -6,7 +6,7 @@ function Footer() {
           <div className="flex justify-center gap-6">
             {/*github*/}
             <a
-              className="text-gray-900 hover:text-gray-900/75 text-gray-300 hover:text-gray-300/75"
+              className="text-gray-300 hover:text-gray-300/75"
               href="https://github.com/SwordAndTea/lets-habit"
               target="_blank"
               rel="noreferrer"
@@ -29,7 +29,7 @@ function Footer() {
 
           </div>
 
-          <p className="mx-auto max-w-lg text-xs text-gray-500 text-gray-400">
+          <p className="mx-auto max-w-lg text-xs text-gray-400">
             If you have any question or any feed back, contact me directly at xiangweiqaz@gmail.com or open an issue at github pages.
 
             <span className="mt-4 block"> &copy; 2022 SwordAndTea </span>

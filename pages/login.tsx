@@ -1,5 +1,5 @@
 import {userLoginByEmail, userRegisterByEmail} from "../api/user";
-import React, {useState} from "react";
+import React, {ReactNode, useState} from "react";
 import {LayoutFooterOnly} from "../components/layout/layout";
 import {NextRouter, useRouter} from "next/router";
 import {noti} from "../util/noti";
@@ -21,7 +21,10 @@ export default function Login() {
     if (resp.data.data.user.user_register_type == "email" && !resp.data.data.user.email_active) {
       route.push(RoutePath.EmailActivateSendPage)
     } else {
-      route.push(RoutePath.HomePage)
+      route.push({
+        pathname: RoutePath.HomePage,
+        query: {"page": 1},
+      })
     }
   }
 
@@ -71,13 +74,13 @@ export default function Login() {
           <div className="relative mt-1">
             <label
               htmlFor="UserEmail"
-              className="relative block overflow-hidden rounded-md border border-gray-200 px-3 pt-3 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
+              className="relative block overflow-hidden rounded-md border-2 border-gray-200 px-3 pt-3 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
             >
               <input
                 id="UserEmail"
                 type="email"
                 placeholder="Email"
-                className="peer h-10 w-full border-none bg-transparent p-0 placeholder-transparent focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
+                className="autofill-modify peer h-10 w-full border-none bg-transparent p-0 placeholder-transparent focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
                 onChange={(e) => {
                   setEmail(e.target.value)
                 }}
@@ -95,7 +98,7 @@ export default function Login() {
           <div className="relative mt-1">
             <label
               htmlFor="UserPassword"
-              className="relative block overflow-hidden rounded-md border border-gray-200 px-3 pt-3 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
+              className="relative block overflow-hidden rounded-md border-2 border-gray-200 px-3 pt-3 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
             >
               <input
                 id="UserPassword"
@@ -115,10 +118,25 @@ export default function Login() {
             </label>
           </div>
 
+          {/*forget password btn for sign in*/}
+          {!isSignUp && (
+            <div className="flex">
+              <button
+                type="button"
+                className="ml-auto text-gray-500 font-normal underline"
+                onClick={()=>{
+                  route.push(RoutePath.ResetPasswordPage)
+                }}
+              >
+                forget password
+              </button>
+            </div>
+          )}
+
           {/*sign in / sign up button*/}
           <button
             type="submit"
-            className={`block flex justify-center w-full rounded-lg bg-black px-5 py-3 text-sm font-medium text-white`}
+            className={`flex justify-center w-full rounded-lg bg-black px-5 py-3 text-sm font-medium text-white`}
             onClick={handleEmailSignUpLogin}
             disabled={disableSignInSignUp}
           >
@@ -186,8 +204,7 @@ export default function Login() {
   )
 }
 
-// @ts-ignore
-Login.getLayout = (page) => {
+Login.getLayout = (page: ReactNode) => {
   return <LayoutFooterOnly>{page}</LayoutFooterOnly>
 }
 

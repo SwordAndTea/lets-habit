@@ -1,4 +1,3 @@
-
 export enum RoutePath {
   LoginPage = "/login",
   EmailActivatePage = "/user/email/activate",
@@ -6,7 +5,8 @@ export enum RoutePath {
   HomePage = "/home",
   NewHabitPage = "/habit/new",
   EditHabitPage = "/habit/edit",
-  UserSettingPage = "/user/setting"
+  UserSettingPage = "/user/setting",
+  ResetPasswordPage = "/user/password/reset",
 }
 
 export const EmailActivateActivateCodeParam = "code"

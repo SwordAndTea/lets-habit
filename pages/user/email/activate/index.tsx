@@ -1,8 +1,10 @@
 import {
-  EmailActivateActivateCodeParam,
+  EmailActivateActivateCodeParam, RoutePath,
 } from "../../../../util/const";
 import {userEmailActivate} from "../../../../api/user";
 import {GetServerSideProps} from "next";
+import {useEffect, useState} from "react";
+import {useRouter} from "next/router";
 
 
 enum AccountActivateState {
@@ -16,10 +18,35 @@ interface EmailActivatePageProps {
 }
 
 export default function EmailActivatePage(props: EmailActivatePageProps) {
+  const [pageRedirectRemainTime, setPageRedirectRemainTime] = useState(5)
+  const route = useRouter()
+
+  const countDownAndRedirect = () => {
+    let remainTime = pageRedirectRemainTime
+    let i = setInterval(() => {
+      if (remainTime <= 0) {
+        clearInterval(i)
+        route.replace({
+          pathname: RoutePath.HomePage,
+          query: {"page": 1},
+        })
+        return
+      }
+      remainTime -= 1
+      setPageRedirectRemainTime(remainTime)
+    }, 1000)
+  }
+
+  useEffect(() => {
+    if (props.status == AccountActivateState.Success) {
+      countDownAndRedirect()
+    }
+  }, [])
+
   return (
     <div className="m-auto">
       <p className="text-xl">
-        {props.status == AccountActivateState.Success && "your account has been activated 👏🥳👏"}
+        {props.status == AccountActivateState.Success && `your account has been activated 👏🥳👏, will go to home page in ${pageRedirectRemainTime} seconds`}
         {props.status == AccountActivateState.Fail && `oops, activate failed, ${props.msg} 🤔`}
       </p>
     </div>

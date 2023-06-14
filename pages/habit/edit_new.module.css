@@ -12,11 +12,11 @@
 }
 
 .editNewFocusRing {
-  @apply focus:outline-none focus:border-transparent focus:ring-inset focus:ring-2 focus:ring-gray-400;
+  @apply focus:outline-none focus:border-none focus:ring-inset focus:ring-2 focus:ring-gray-400;
 }
 
 .editNewTextInput {
-  @apply w-full h-[44px] rounded-lg border-transparent bg-transparent editNewBlurRing editNewFocusRing;
+  @apply w-full h-11 rounded-lg border-none bg-transparent editNewBlurRing editNewFocusRing;
 }
 
 .editNewUserSearcher {
@@ -24,7 +24,7 @@
 }
 
 .editNewUserSearcherInput {
-  @apply border-transparent bg-transparent focus:outline-none focus:border-transparent focus:ring-0;
+  @apply border-none bg-transparent focus:outline-none focus:border-none focus:ring-0;
 }
 
 .editNewWeekdayChooser {
@@ -68,9 +68,9 @@
 }
 
 .editNewSelect {
-  @apply h-[44px] rounded-lg text-slate-600 editNewBlurRing editNewFocusRing;
+  @apply h-11 rounded-lg text-slate-600 editNewBlurRing editNewFocusRing;
 }
 
 .editNewSelectOption {
-  @apply h-[44px] p-2;
+  @apply h-11 p-2;
 }

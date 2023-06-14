@@ -94,7 +94,7 @@ export default function UserSettingPage(props: PageUserProp) {
   }
 
   return (
-    <div className="w-full py-4 px-72">
+    <div className="w-full pt-6 pb-12 px-72">
       {showCropper && (
         <Modal
           onCancel={() => {
